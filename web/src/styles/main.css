@@ -1,0 +1,202 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --nav-height: 66px;
+  --search-top: 128px;
+  --hero-height: 300px;
+}
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
+/* theme colors, mirroring uno.config.ts shortcuts */
+.text-link {
+  color: var(--color-sky-700);
+}
+.text-link:hover {
+  color: var(--color-sky-500);
+}
+.text-link-secondary {
+  color: color-mix(in srgb, var(--color-sky-700) 60%, transparent);
+}
+.text-link-secondary:hover {
+  color: color-mix(in srgb, var(--color-sky-500) 60%, transparent);
+}
+.text-link-secondary-hover-base:hover {
+  color: color-mix(in srgb, var(--color-sky-700) 60%, transparent);
+}
+.text-link-active:hover {
+  color: var(--color-sky-600);
+}
+
+.text-base-50 {
+  color: var(--color-neutral-50);
+}
+.text-base-100 {
+  color: var(--color-neutral-100);
+}
+.text-base-200 {
+  color: var(--color-neutral-200);
+}
+.text-base-300 {
+  color: var(--color-neutral-300);
+}
+.text-base-400 {
+  color: var(--color-neutral-400);
+}
+.text-base-500 {
+  color: var(--color-neutral-500);
+}
+.text-base-600 {
+  color: var(--color-neutral-600);
+}
+.text-base-700 {
+  color: var(--color-neutral-700);
+}
+.text-base-800 {
+  color: var(--color-neutral-800);
+}
+.text-base-900 {
+  color: var(--color-neutral-900);
+}
+
+.dark .text-base-50 {
+  color: var(--color-neutral-50);
+}
+.dark .text-base-100 {
+  color: var(--color-neutral-100);
+}
+.dark .text-base-200 {
+  color: var(--color-neutral-200);
+}
+.dark .text-base-300 {
+  color: var(--color-neutral-300);
+}
+.dark .text-base-400 {
+  color: var(--color-neutral-400);
+}
+.dark .text-base-500 {
+  color: var(--color-neutral-500);
+}
+.dark .text-base-600 {
+  color: var(--color-neutral-600);
+}
+.dark .text-base-700 {
+  color: var(--color-neutral-700);
+}
+.dark .text-base-800 {
+  color: var(--color-neutral-800);
+}
+.dark .text-base-900 {
+  color: var(--color-neutral-900);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* fonts */
+.font-quicksand {
+  font-family: 'Quicksand', 'IBM Plex Sans', 'Noto Sans Simplified Chinese', sans-serif;
+}
+
+/* hero background */
+.bg-hero {
+  background-image: linear-gradient(
+    to right,
+    rgb(255 228 230 / 0.6),
+    rgb(255 241 242 / 0.5),
+    rgb(255 228 230 / 0.6)
+  );
+}
+.dark .bg-hero {
+  background-image: linear-gradient(
+    to right,
+    rgb(39 39 42 / 0.9),
+    rgb(24 24 27 / 0.8),
+    rgb(39 39 42 / 0.9)
+  );
+}
+
+/* main width container */
+.main {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.main-with-sidebar .main,
+.sidebar-root + * .main {
+  max-width: 860px;
+}
+
+/* shadow box */
+.shadow-box {
+  box-shadow:
+    0 2px 3px rgb(10 10 10 / 10%),
+    0 0 0 1px rgb(10 10 10 / 10%);
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(161 161 170 / 0.4);
+  border-radius: 4px;
+}
+
+/* toast overrides */
+[data-sonner-toaster] {
+  --normal-bg: var(--color-zinc-50);
+}
+
+/* spinner (lds-ring) */
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: 1px;
+  border: 2px solid var(--color-zinc-400);
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: var(--color-zinc-400) transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

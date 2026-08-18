@@ -174,6 +174,10 @@ func (s *Server) route(r *http.Request) func(http.ResponseWriter, *http.Request)
 		return s.handleMCP
 	case path == "/.well-known/mcp/server-card.json":
 		return s.handleServerCard
+	case path == "/calendar" || strings.HasPrefix(path, "/calendar/") ||
+		path == "/subjects" || strings.HasPrefix(path, "/subjects/") ||
+		strings.HasPrefix(path, "/subject/"):
+		return s.proxyToBGM
 	}
 	return nil
 }
