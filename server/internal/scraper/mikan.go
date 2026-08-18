@@ -67,7 +67,7 @@ func parseMikanDate(raw string, now time.Time) (time.Time, error) {
 func FetchMikanPage(page int, retry int) ([]ScrapedResource, error) {
 	return retryFn(retry, func() ([]ScrapedResource, error) {
 		url := fmt.Sprintf("%s/Home/Classic/%d", MikanBase, page)
-		resp, err := fetchURL("GET", url, "", nil, nil)
+		resp, err := fetchURL("GET", url, BrowserUA, nil, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -175,7 +175,7 @@ func parseMikanRow(tds []*html.Node, now time.Time) (ScrapedResource, bool) {
 func FetchMikanDetail(id string, retry int) (*ScrapedResourceDetail, error) {
 	return retryFn(retry, func() (*ScrapedResourceDetail, error) {
 		url := fmt.Sprintf("%s/Home/Episode/%s", MikanBase, id)
-		resp, err := fetchURL("GET", url, "", nil, nil)
+		resp, err := fetchURL("GET", url, BrowserUA, nil, nil)
 		if err != nil {
 			return nil, err
 		}

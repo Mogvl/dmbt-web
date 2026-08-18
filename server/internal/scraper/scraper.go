@@ -74,6 +74,10 @@ func IsNetworkError(err error) bool {
 // Client is the shared HTTP client. No rate limiting, mirroring the original.
 var Client = &http.Client{Timeout: 60 * time.Second}
 
+// BrowserUA mirrors the moe scraper UA; used across providers so Cloudflare
+// does not treat bare Go requests as bots.
+const BrowserUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0"
+
 // fetchURL performs a GET with the given UA and returns the response body
 // reader; it converts bad statuses to NetworkError.
 func fetchURL(method, url, ua string, body io.Reader, headers map[string]string) (*http.Response, error) {
@@ -98,8 +102,9 @@ func fetchURL(method, url, ua string, body io.Reader, headers map[string]string)
 	return resp, nil
 }
 
-// retryFn mirrors the original retryFn: re-invokes immediately, count+1 times
-// total, on error.
+// retryFn mirrors the original retryFn: re-invokes, count+1 times total, on
+// error. A short pause is inserted between network-error retries so that
+// upstream rate limits (429) have a chance to clear.
 func retryFn[T any](count int, fn func() (T, error)) (T, error) {
 	var lastErr error
 	for i := 0; i <= count; i++ {
@@ -108,6 +113,9 @@ func retryFn[T any](count int, fn func() (T, error)) (T, error) {
 			return v, nil
 		}
 		lastErr = err
+		if i < count && IsNetworkError(err) {
+			time.Sleep(2 * time.Second)
+		}
 	}
 	var zero T
 	return zero, lastErr

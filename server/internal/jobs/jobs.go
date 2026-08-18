@@ -138,6 +138,7 @@ func (e *Executor) RunFetchJob(providerName string) (*resources.UpsertResult, er
 		}
 		return nil, err
 	}
+	log.Printf("fetch %s: walked %d new resources, upserting...", providerName, len(newResources))
 
 	converted := make([]resources.NewResource, 0, len(newResources))
 	for _, r := range newResources {

@@ -492,8 +492,15 @@ func ParseSize(size string) int64 {
 }
 
 // UpsertResources ports upsertResources.
-func (s *Store) UpsertResources(resources []NewResource, indexSubject bool, matchSubject func(string) *int64) (*UpsertResult, error) {
-	result := &UpsertResult{}
+func (s *Store) UpsertResources(resources []NewResource, indexSubject bool, matchSubject func(string) *int64) (result *UpsertResult, err error) {
+	result = &UpsertResult{}
+	// A single malformed title must not take down the server (the original
+	// TS pipeline throws per-resource and keeps going).
+	defer func() {
+		if r := recover(); r != nil {
+			result.Errors = append(result.Errors, fmt.Sprintf("panic while upserting: %v", r))
+		}
+	}()
 
 	// dedupe by provider:providerId, first wins
 	seen := map[string]bool{}

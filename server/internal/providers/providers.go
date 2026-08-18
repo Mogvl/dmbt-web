@@ -177,15 +177,26 @@ func newAniProvider() *Provider {
 }
 
 // pageDelayMs is a politeness delay between upstream page requests. The
-// original fires pages back-to-back; dmhy rate-limits burst traffic, so the
-// delay is configurable (SCRAPE_PAGE_DELAY_MS, default 1500).
+// original fires pages back-to-back; upstream rate limits require a small
+// delay (SCRAPE_PAGE_DELAY_MS, default 800).
 var pageDelayMs = func() int {
 	if v := os.Getenv("SCRAPE_PAGE_DELAY_MS"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil {
 			return n
 		}
 	}
-	return 1500
+	return 800
+}()
+
+// maxFetchPages caps a single fetch walk so the job commits progress on
+// first-run history imports (MAX_FETCH_PAGES, default 200; 0 = unlimited).
+var maxFetchPages = func() int {
+	if v := os.Getenv("MAX_FETCH_PAGES"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			return n
+		}
+	}
+	return 200
 }()
 
 func politeDelay() {
@@ -200,11 +211,19 @@ func FetchLatestPages(sys System, provider string, fetch func(page int) ([]scrap
 	visited := map[string]scraper.ScrapedResource{}
 
 	for page := 1; ; page++ {
+		if maxFetchPages > 0 && page > maxFetchPages {
+			break
+		}
 		if page > 1 {
 			politeDelay()
 		}
 		resp, err := fetch(page)
 		if err != nil {
+			// Rate-limited or upstream error mid-walk: keep what we have
+			// (the alternative — aborting the whole job — yields nothing).
+			if scraper.IsNetworkError(err) && len(visited) > 0 {
+				break
+			}
 			return nil, err
 		}
 		var newRes []scraper.ScrapedResource
@@ -250,6 +269,9 @@ func FetchResourcePages(sys System, provider string, fetch func(page int) ([]scr
 		}
 		resp, err := fetch(page)
 		if err != nil {
+			if scraper.IsNetworkError(err) && len(visited) > 0 {
+				break
+			}
 			return nil, err
 		}
 		for _, r := range resp {

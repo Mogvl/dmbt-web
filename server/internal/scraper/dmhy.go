@@ -89,7 +89,7 @@ var dmhyIDRe = regexp.MustCompile(`^(\d+)`)
 func FetchDmhyPage(page int, retry int) ([]ScrapedResource, error) {
 	return retryFn(retry, func() ([]ScrapedResource, error) {
 		url := fmt.Sprintf("%s/topics/list/page/%d", DmhyBase, page)
-		resp, err := fetchURL("GET", url, "", nil, nil)
+		resp, err := fetchURL("GET", url, BrowserUA, nil, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -260,7 +260,7 @@ func lastSegment(href string) string {
 func FetchDmhyDetail(id string, retry int) (*ScrapedResourceDetail, error) {
 	return retryFn(retry, func() (*ScrapedResourceDetail, error) {
 		url := fmt.Sprintf("%s/topics/view/%s", DmhyBase, id)
-		resp, err := fetchURL("GET", url, "", nil, nil)
+		resp, err := fetchURL("GET", url, BrowserUA, nil, nil)
 		if err != nil {
 			return nil, err
 		}

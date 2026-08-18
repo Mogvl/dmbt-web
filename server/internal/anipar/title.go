@@ -144,6 +144,11 @@ func parseMultipleTitles(ctx *Context, options splitOptions) []string {
 			trimmedTitles = append(trimmedTitles, t)
 		}
 	}
+	if len(trimmedTitles) == 0 {
+		// TS tolerates trimmedTitles[0] === undefined; mirror that by
+		// leaving the title unset (normalize() will return nil).
+		return nil
+	}
 	trimmedTitle := trimmedTitles[0]
 
 	ctx.update("title", trimmedTitle)
