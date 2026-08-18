@@ -104,6 +104,7 @@ func FetchMikanPage(page int, retry int) ([]ScrapedResource, error) {
 }
 
 func parseMikanRow(tds []*html.Node, now time.Time) (ScrapedResource, bool) {
+	tracker := ""
 	// td[0] date
 	createdAt, err := parseMikanDate(htmlx.Text(tds[0]), now)
 	if err != nil {
@@ -146,7 +147,7 @@ func parseMikanRow(tds []*html.Node, now time.Time) (ScrapedResource, bool) {
 		return n.Type == html.ElementNode && htmlx.Attr(n, "data-clipboard-text") != ""
 	}) {
 		if v := htmlx.Attr(el, "data-clipboard-text"); v != "" {
-			magnet, _ = splitOnce(v, "&")
+			magnet, tracker = splitOnce(v, "&")
 			break
 		}
 	}
@@ -166,6 +167,7 @@ func parseMikanRow(tds []*html.Node, now time.Time) (ScrapedResource, bool) {
 		Href:       providerID,
 		Type:       "动画",
 		Magnet:     magnet,
+		Tracker:    tracker,
 		Size:       size,
 		Publisher:  &Party{ID: party.ID, Name: party.Name},
 		Fansub:     &Party{ID: party.ID, Name: party.Name},

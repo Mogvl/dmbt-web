@@ -35,7 +35,7 @@ func main() {
 			if r.Magnet == "" {
 				continue
 			}
-			res, err := db.Exec(`UPDATE resources SET magnet = ?, tracker = ? WHERE provider_name = 'mikan' AND provider_id = ? AND (magnet IS NULL OR magnet = '')`,
+			res, err := db.Exec(`UPDATE resources SET magnet = ?, tracker = ? WHERE provider_name = 'mikan' AND provider_id = ? AND (magnet IS NULL OR magnet = '' OR tracker IS NULL OR tracker = '')`,
 				r.Magnet, r.Tracker, r.ProviderID)
 			if err != nil {
 				log.Printf("update error: %v", err)
