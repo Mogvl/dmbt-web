@@ -13,10 +13,17 @@ import (
 )
 
 // Open opens (creating if needed) the SQLite database at path and applies
-// the schema.
+// the schema. Relative paths are anchored at the binary's directory so the
+// data location does not depend on the process working directory.
 func Open(path string) (*sql.DB, error) {
 	if path == "" {
-		path = "data/animegarden.db"
+		path = filepath.Join("data", "animegarden.db")
+	}
+	if !filepath.IsAbs(path) {
+		exe, err := os.Executable()
+		if err == nil {
+			path = filepath.Join(filepath.Dir(exe), path)
+		}
 	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, err

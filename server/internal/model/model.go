@@ -9,6 +9,11 @@ import (
 	"github.com/Mogvl/dmbt-web/server/internal/filter"
 )
 
+// fixedTime formats a time like PostgreSQL timestamptz JSON ("...T....000Z").
+func fixedTime(t time.Time) string {
+	return t.UTC().Format("2006-01-02T15:04:05.000Z07:00")
+}
+
 // Resource mirrors the API Resource<T> type. Optional fields are omitted
 // from JSON when empty, matching the original serialization.
 type Resource struct {
@@ -27,6 +32,36 @@ type Resource struct {
 	CreatedAt  time.Time  `json:"createdAt"`
 	FetchedAt  time.Time  `json:"fetchedAt"`
 	Metadata   *any       `json:"metadata,omitempty"`
+}
+
+// MarshalJSON renders times in the fixed PostgreSQL-style format.
+func (r Resource) MarshalJSON() ([]byte, error) {
+	out := map[string]any{
+		"id":         r.ID,
+		"provider":   r.Provider,
+		"providerId": r.ProviderID,
+		"title":      r.Title,
+		"href":       r.Href,
+		"type":       r.Type,
+		"magnet":     r.Magnet,
+		"size":       r.Size,
+		"createdAt":  fixedTime(r.CreatedAt),
+		"fetchedAt":  fixedTime(r.FetchedAt),
+	}
+	if r.Tracker != nil {
+		out["tracker"] = *r.Tracker
+	}
+	if r.Fansub != nil {
+		out["fansub"] = r.Fansub
+	}
+	out["publisher"] = r.Publisher
+	if r.SubjectID != nil {
+		out["subjectId"] = *r.SubjectID
+	}
+	if r.Metadata != nil {
+		out["metadata"] = *r.Metadata
+	}
+	return json.Marshal(out)
 }
 
 // UserBrief mirrors the publisher/fansub object.

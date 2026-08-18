@@ -126,6 +126,8 @@ func (s *Server) fetchProviderDetail(providerName string, provider *providers.Pr
 			d := model.ResourceDetail{
 				Description:  fetched.Description,
 				HasMoreFiles: fetched.HasMoreFiles,
+				Files:        []model.File{},
+				Magnets:      []model.Magnet{},
 			}
 			for _, f := range fetched.Files {
 				d.Files = append(d.Files, model.File{Name: f.Name, Size: f.Size})

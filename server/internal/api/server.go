@@ -176,7 +176,8 @@ func (s *Server) route(r *http.Request) func(http.ResponseWriter, *http.Request)
 		return s.handleServerCard
 	case path == "/calendar" || strings.HasPrefix(path, "/calendar/") ||
 		path == "/subjects" || strings.HasPrefix(path, "/subjects/") ||
-		strings.HasPrefix(path, "/subject/"):
+		strings.HasPrefix(path, "/subject/") ||
+		strings.HasPrefix(path, "/bgmx"):
 		return s.proxyToBGM
 	}
 	return nil

@@ -19,7 +19,6 @@ export default defineConfig({
       '/feed.xml': 'http://localhost:9701',
       '/sitemaps': 'http://localhost:9701',
       '/health': 'http://localhost:9701',
-      '/calendar': 'http://localhost:9701',
       '/bgmx': 'http://localhost:9701',
       '/subject': 'http://localhost:9701',
     },

@@ -32,7 +32,7 @@ const calendarData = ref<CalendarData | null>(null);
 
 const loadCalendar = async () => {
   try {
-    const resp = await fetch('/calendar');
+    const resp = await fetch('/bgmx/calendar');
     const data = await resp.json();
     if (data.ok) {
       calendarData.value = data.data;

@@ -40,7 +40,7 @@ const activeDay = ref<number | null>(null);
 async function load() {
   loading.value = true;
   try {
-    const resp = await fetch('/calendar');
+    const resp = await fetch('/bgmx/calendar');
     const json = await resp.json();
     if (json.ok) {
       data.value = json.data;

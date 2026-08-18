@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -62,12 +63,22 @@ func envBool(key string, def bool) bool {
 	return def
 }
 
+// exeDir returns the directory of the running binary, used to anchor the
+// default data directory regardless of the process working directory.
+func exeDir() string {
+	exe, err := os.Executable()
+	if err != nil {
+		return "."
+	}
+	return filepath.Dir(exe)
+}
+
 // Load reads configuration from environment variables.
 func Load() *Config {
 	cfg := &Config{
 		Port:              envInt("PORT", 9701),
 		PublicURL:         env("PUBLIC_URL", "http://localhost:9701"),
-		DataDir:           env("DATA_DIR", "data"),
+		DataDir:           env("DATA_DIR", filepath.Join(exeDir(), "data")),
 		DatabaseURL:       env("DATABASE_URL", ""),
 		RedisURL:          env("REDIS_URL", ""),
 		Cron:              envBool("CRON", true),
