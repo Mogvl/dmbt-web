@@ -137,37 +137,37 @@ func (s *Server) route(r *http.Request) func(http.ResponseWriter, *http.Request)
 
 	switch {
 	case path == "/" || path == "/health":
-		return s.handleRoot
+		return withEtag(s.handleRoot)
 	case path == "/users":
-		return s.requireGET(s.handleUsers)
+		return withEtag(s.requireGET(s.handleUsers))
 	case path == "/teams":
-		return s.requireGET(s.handleTeams)
+		return withEtag(s.requireGET(s.handleTeams))
 	case path == "/subjects":
-		return s.requireGET(s.handleSubjects)
+		return withEtag(s.requireGET(s.handleSubjects))
 	case path == "/resources" || path == "/resources/":
-		return s.handleResources
+		return withEtag(s.handleResources)
 	case strings.HasPrefix(path, "/resources/"):
-		return s.handleResources
+		return withEtag(s.handleResources)
 	case strings.HasPrefix(path, "/resource/"):
-		return s.handleProviderResource
+		return withEtag(s.handleProviderResource)
 	case strings.HasPrefix(path, "/detail/infohash/"):
-		return s.handleInfoHash
+		return withEtag(s.handleInfoHash)
 	case strings.HasPrefix(path, "/detail/"):
-		return s.handleProviderResource
+		return withEtag(s.handleProviderResource)
 	case path == "/collection":
 		return s.handleCreateCollection
 	case strings.HasPrefix(path, "/collection/"):
 		rest := strings.TrimPrefix(path, "/collection/")
 		if strings.HasSuffix(rest, "/feed.xml") {
-			return s.handleCollectionFeed
+			return withEtag(s.handleCollectionFeed)
 		}
-		return s.handleGetCollection
+		return withEtag(s.handleGetCollection)
 	case path == "/feed.xml":
-		return s.handleFeed
+		return withEtag(s.handleFeed)
 	case path == "/sitemaps/subjects":
-		return s.requireGET(s.handleSitemapSubjects)
+		return withEtag(s.requireGET(s.handleSitemapSubjects))
 	case strings.HasPrefix(path, "/sitemaps/"):
-		return s.handleSitemapMonth
+		return withEtag(s.handleSitemapMonth)
 	case path == "/admin/providers" || strings.HasPrefix(path, "/admin/resources"):
 		return s.handleAdmin
 	case path == "/mcp":

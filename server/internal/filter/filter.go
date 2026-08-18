@@ -78,9 +78,10 @@ func parseDateLike(v string) *time.Time {
 	return nil
 }
 
-// parseBool ports zod z.coerce.boolean() — JavaScript Boolean(value).
+// parseBool ports zod z.coerce.boolean() — JavaScript Boolean(value):
+// any non-empty string coerces to true ("false", "0", "null" included).
 func parseBool(v string) *bool {
-	b := v != "" && v != "0" && !strings.EqualFold(v, "false") && !strings.EqualFold(v, "null") && !strings.EqualFold(v, "undefined")
+	b := v != ""
 	return &b
 }
 

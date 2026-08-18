@@ -85,13 +85,14 @@ func parseBodyOptions(raw map[string]any) *filter.BodyOptions {
 	return opt
 }
 
-// coerceBool ports z.coerce.boolean(): JS Boolean() semantics.
+// coerceBool ports z.coerce.boolean(): JS Boolean() semantics — any
+// non-empty string coerces to true ("false", "0" included).
 func coerceBool(v any) bool {
 	switch t := v.(type) {
 	case bool:
 		return t
 	case string:
-		return t != "" && t != "0" && t != "false" && t != "null" && t != "undefined"
+		return t != ""
 	case float64:
 		return t != 0
 	case nil:
