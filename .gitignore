@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+*.tgz
+
+# Build outputs
+dist/
+build/
+*.exe
+server/bin/
+
+# Go
+server/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+logs/
+*.log
