@@ -63,7 +63,7 @@ Environment variables (all optional):
 | Variable | Default | Purpose |
 |---|---|---|
 | `PORT` | `9701` | HTTP listen port |
-| `DATA_DIR` | `<exe>/data` | SQLite data directory |
+| `DATA_DIR` | `data` | SQLite data directory (relative to the working directory) |
 | `APP_HOST` | `animes.garden` | site host used in feed/detail URLs |
 | `CRON` | `true` | enable the scheduler (fetch every 5 min, sync hourly, calendar hourly) |
 | `TELEGRAM_TOKEN` / `TELEGRAM_CHAT_ID` | — | Telegram push |
