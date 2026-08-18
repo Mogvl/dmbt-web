@@ -20,21 +20,24 @@ type Store struct {
 	DB *sql.DB
 
 	// NameToUserID / NameToTeamID are refreshed by the users/teams modules.
-	NameToUserID  map[string]int64
-	NameToTeamID  map[string]int64
-	UserIDToName  map[int64]string
-	TeamIDToName  map[int64]string
+	NameToUserID map[string]int64
+	NameToTeamID map[string]int64
+	UserIDToName map[int64]string
+	TeamIDToName map[int64]string
 }
 
 // FindResult mirrors the find() response payload.
 type FindResult struct {
 	Resources  []model.Resource
-	Pagination struct {
-		Page     int
-		PageSize int
-		Complete bool
-	}
-	Filter map[string]any
+	Pagination PaginationResult
+	Filter     map[string]any
+}
+
+// PaginationResult mirrors the API pagination object.
+type PaginationResult struct {
+	Page     int  `json:"page"`
+	PageSize int  `json:"pageSize"`
+	Complete bool `json:"complete"`
 }
 
 // Banned names for the bangumi preset, mirroring filter.ts.
@@ -61,13 +64,13 @@ type DBFilter struct {
 
 func (q *Query) normalizeDBFilter(f filter.FilterOptions) DBFilter {
 	out := DBFilter{
-		Preset:   f.Preset,
-		Provider: f.Provider,
+		Preset:    f.Preset,
+		Provider:  f.Provider,
 		Duplicate: f.Duplicate,
-		Types:    f.Types,
-		Before:   f.Before,
-		After:    f.After,
-		Subjects: f.Subjects,
+		Types:     f.Types,
+		Before:    f.Before,
+		After:     f.After,
+		Subjects:  f.Subjects,
 	}
 	for _, name := range f.Publishers {
 		if id, ok := q.store.NameToUserID[name]; ok {
@@ -351,22 +354,22 @@ func (q *Query) findFromDatabase(f DBFilter, offset, limit int) ([]model.Resourc
 }
 
 type resourceRow struct {
-	id         int64
-	provider   string
-	providerId string
-	title      string
-	titleAlt   string
-	href       string
-	typ        string
-	magnet     string
-	tracker    sql.NullString
-	size       int64
-	createdAt  string
-	fetchedAt  string
+	id          int64
+	provider    string
+	providerId  string
+	title       string
+	titleAlt    string
+	href        string
+	typ         string
+	magnet      string
+	tracker     sql.NullString
+	size        int64
+	createdAt   string
+	fetchedAt   string
 	publisherID int64
-	fansubID   sql.NullInt64
-	subjectID  sql.NullInt64
-	metadata   sql.NullString
+	fansubID    sql.NullInt64
+	subjectID   sql.NullInt64
+	metadata    sql.NullString
 }
 
 // transform ports QueryManager.transform + transformResourceHref.

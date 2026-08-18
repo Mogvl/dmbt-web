@@ -131,7 +131,10 @@ func FetchDmhyPage(page int, retry int) ([]ScrapedResource, error) {
 
 func parseDmhyRow(tds []*html.Node) (ScrapedResource, bool) {
 	// td[0] time
-	rawTime := strings.TrimSpace(htmlx.Text(tds[0]))
+	rawTime := ""
+	if spans := htmlx.Tag(tds[0], "span"); len(spans) > 0 {
+		rawTime = strings.TrimSpace(htmlx.Text(spans[0]))
+	}
 	t, err := time.Parse("2006/01/02 15:04", rawTime)
 	if err != nil {
 		return ScrapedResource{}, false
@@ -142,13 +145,22 @@ func parseDmhyRow(tds []*html.Node) (ScrapedResource, bool) {
 	rawType := strings.TrimSpace(htmlx.Text(tds[1]))
 	typ := dmhyType(rawType)
 
-	// td[2] title + href + fansub
+	// td[2] title + href + fansub. The title link is the FIRST direct-child
+	// <a>; the fansub link is nested inside span.tag (mirroring the original
+	// [...tds[2].children].find(n => n.tagName === 'A')).
 	var title, href string
 	var fansub *Party
-	as := htmlx.Tag(tds[2], "a")
-	if len(as) > 0 {
-		title = strings.TrimSpace(htmlx.Text(as[0]))
-		href = htmlx.Attr(as[0], "href")
+	{
+		var as []*html.Node
+		for _, c := range htmlx.Children(tds[2]) {
+			if c.Data == "a" {
+				as = append(as, c)
+			}
+		}
+		if len(as) > 0 {
+			title = strings.TrimSpace(htmlx.Text(as[0]))
+			href = htmlx.Attr(as[0], "href")
+		}
 	}
 	for _, span := range htmlx.Tag(tds[2], "span") {
 		if !htmlx.HasClass(span, "tag") {

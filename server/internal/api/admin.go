@@ -43,7 +43,6 @@ func (s *Server) handleAdmin(w http.ResponseWriter, r *http.Request) {
 		if len(sub) == 1 {
 			// POST /admin/resources/:provider
 			body, status := s.sys.Executor.FetchProvider(providerName)
-			w.WriteHeader(status)
 			s.json(w, status, body)
 			return
 		}
@@ -58,7 +57,6 @@ func (s *Server) handleAdmin(w http.ResponseWriter, r *http.Request) {
 				end = 10
 			}
 			body, status := s.sys.Executor.SyncProvider(providerName, start, end)
-			w.WriteHeader(status)
 			s.json(w, status, body)
 			return
 		}

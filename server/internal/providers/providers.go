@@ -4,19 +4,22 @@ package providers
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"sort"
+	"strconv"
+	"time"
 
 	"github.com/Mogvl/dmbt-web/server/internal/scraper"
 )
 
 // Provider is the runtime abstraction over one scraper.
 type Provider struct {
-	ID          string
-	Name        string
-	FetchLatest func(retry int) ([]scraper.ScrapedResource, error)
-	FetchPages  func(start, end int) ([]scraper.ScrapedResource, error)
-	FetchDetail func(id string, retry int) (*scraper.ScrapedResourceDetail, error)
+	ID           string
+	Name         string
+	FetchLatest  func(retry int) ([]scraper.ScrapedResource, error)
+	FetchPages   func(start, end int) ([]scraper.ScrapedResource, error)
+	FetchDetail  func(id string, retry int) (*scraper.ScrapedResourceDetail, error)
 	GetDetailURL func(sys System, path string) (*DetailURL, error)
 }
 
@@ -173,12 +176,33 @@ func newAniProvider() *Provider {
 	}
 }
 
+// pageDelayMs is a politeness delay between upstream page requests. The
+// original fires pages back-to-back; dmhy rate-limits burst traffic, so the
+// delay is configurable (SCRAPE_PAGE_DELAY_MS, default 1500).
+var pageDelayMs = func() int {
+	if v := os.Getenv("SCRAPE_PAGE_DELAY_MS"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			return n
+		}
+	}
+	return 1500
+}()
+
+func politeDelay() {
+	if pageDelayMs > 0 {
+		time.Sleep(time.Duration(pageDelayMs) * time.Millisecond)
+	}
+}
+
 // FetchLatestPages ports fetchLatestPages from providers/scraper/base.ts:
 // loop pages until a page yields zero real-new resources.
 func FetchLatestPages(sys System, provider string, fetch func(page int) ([]scraper.ScrapedResource, error)) ([]scraper.ScrapedResource, error) {
 	visited := map[string]scraper.ScrapedResource{}
 
 	for page := 1; ; page++ {
+		if page > 1 {
+			politeDelay()
+		}
 		resp, err := fetch(page)
 		if err != nil {
 			return nil, err
@@ -221,6 +245,9 @@ func FetchLatestPages(sys System, provider string, fetch func(page int) ([]scrap
 func FetchResourcePages(sys System, provider string, fetch func(page int) ([]scraper.ScrapedResource, error), start, end int) ([]scraper.ScrapedResource, error) {
 	visited := map[string]scraper.ScrapedResource{}
 	for page := start; page <= end; page++ {
+		if page > start {
+			politeDelay()
+		}
 		resp, err := fetch(page)
 		if err != nil {
 			return nil, err

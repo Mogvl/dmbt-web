@@ -198,7 +198,7 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 		providersMap[p.ID] = &model.Provider{
 			ID:          p.ID,
 			Name:        p.Name,
-			RefreshedAt: timestamp,
+			RefreshedAt: timestamp.UTC(),
 			IsActive:    true,
 		}
 	}
