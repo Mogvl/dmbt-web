@@ -78,7 +78,7 @@ func Load() *Config {
 	cfg := &Config{
 		Port:              envInt("PORT", 9701),
 		PublicURL:         env("PUBLIC_URL", "http://localhost:9701"),
-		DataDir:           env("DATA_DIR", filepath.Join(exeDir(), "data")),
+		DataDir:           env("DATA_DIR", "data"),
 		DatabaseURL:       env("DATABASE_URL", ""),
 		RedisURL:          env("REDIS_URL", ""),
 		Cron:              envBool("CRON", true),
