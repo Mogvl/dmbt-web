@@ -20,6 +20,7 @@ import (
 type Executor struct {
 	Store     *resources.Store
 	Providers *providers.Registry
+	State     *providers.State
 	Subjects  *subjects.Module
 	Push      Pusher
 
@@ -44,11 +45,11 @@ func (noopPusher) EnqueueFailedResourceMessages()          {}
 func (noopPusher) NotifyNewResources([]resources.NotifiedResource) {}
 
 // NewExecutor creates the job executor with an optional pusher.
-func NewExecutor(store *resources.Store, reg *providers.Registry, subs *subjects.Module, pusher Pusher) *Executor {
+func NewExecutor(store *resources.Store, reg *providers.Registry, state *providers.State, subs *subjects.Module, pusher Pusher) *Executor {
 	if pusher == nil {
 		pusher = noopPusher{}
 	}
-	return &Executor{Store: store, Providers: reg, Subjects: subs, Push: pusher, running: map[string]string{}}
+	return &Executor{Store: store, Providers: reg, State: state, Subjects: subs, Push: pusher, running: map[string]string{}}
 }
 
 // matchSubject adapts the subjects module to the upsert callback.
@@ -135,6 +136,7 @@ func (e *Executor) RunFetchJob(providerName string) (*resources.UpsertResult, er
 	if err != nil {
 		if scraper.IsNetworkError(err) {
 			log.Printf("marking provider %s inactive (network error)", providerName)
+			e.State.UpdateActiveStatus(providerName, false)
 		}
 		return nil, err
 	}
@@ -180,6 +182,10 @@ func (e *Executor) RunSyncJob(providerName string, start, end int) (*resources.U
 	fetchedAt := time.Now().UTC()
 	pageResources, err := provider.FetchPages(start, end)
 	if err != nil {
+		if scraper.IsNetworkError(err) {
+			log.Printf("marking provider %s inactive (network error)", providerName)
+			e.State.UpdateActiveStatus(providerName, false)
+		}
 		return nil, err
 	}
 
@@ -231,7 +237,11 @@ func (e *Executor) FetchAllProviders() (map[string]*model.Provider, error) {
 }
 
 func (e *Executor) updateRefreshTimestamp(provider string, t time.Time) {
-	e.Store.DB.Exec("UPDATE providers SET refreshed_at = ? WHERE id = ?", db.FormatTime(t), provider)
+	if e.State != nil {
+		e.State.UpdateRefreshTimestamp(provider, t)
+	} else {
+		e.Store.DB.Exec("UPDATE providers SET is_active = 1, refreshed_at = ? WHERE id = ?", db.FormatTime(t), provider)
+	}
 }
 
 func idsOf(notified []resources.NotifiedResource) []int64 {

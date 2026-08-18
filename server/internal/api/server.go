@@ -38,6 +38,9 @@ type System struct {
 	// Timestamp mirrors modules.providers.timestamp: latest provider refresh.
 	Timestamp time.Time
 
+	// ProviderState mirrors modules.providers (isActive / refreshedAt).
+	ProviderState *providers.State
+
 	// AdminSecret mirrors sys.secret.
 	AdminSecret string
 
@@ -194,18 +197,14 @@ func (s *Server) requireGET(h func(http.ResponseWriter, *http.Request)) func(htt
 }
 
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
-	timestamp := s.sys.Timestamp
-	if timestamp.IsZero() {
-		timestamp = time.Now().UTC()
-	}
+	timestamp := time.Now().UTC()
 	providersMap := map[string]*model.Provider{}
-	for _, p := range s.sys.Providers.All() {
-		providersMap[p.ID] = &model.Provider{
-			ID:          p.ID,
-			Name:        p.Name,
-			RefreshedAt: timestamp.UTC(),
-			IsActive:    true,
-		}
+	states := s.sys.ProviderState.All()
+	for _, p := range states {
+		providersMap[p.ID] = p
+	}
+	if ts := s.sys.ProviderState.Timestamp(); !ts.IsZero() {
+		timestamp = ts
 	}
 	s.json(w, 200, map[string]any{
 		"status":    "OK",

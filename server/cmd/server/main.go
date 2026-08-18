@@ -85,13 +85,20 @@ func main() {
 	reg := providers.NewRegistry(sys)
 	sys.Providers = reg
 
+	// provider states (isActive / refreshedAt) mirroring the original module
+	providerState, err := providers.LoadState(sqlDB)
+	if err != nil {
+		log.Fatalf("failed to load provider states: %v", err)
+	}
+	sys.ProviderState = providerState
+
 	// telegram push (optional)
 	var pusher push.Pusher = nil
 	if cfg.TelegramBotToken != "" {
 		pusher = push.New(sqlDB, store, subs, cfg.TelegramBotToken, cfg.TelegramChannelID)
 	}
 
-	executor := jobs.NewExecutor(store, reg, subs, pusher)
+	executor := jobs.NewExecutor(store, reg, providerState, subs, pusher)
 	sys.Executor = executor
 
 	// schedule cron jobs (every 5 min fetch, hourly sync, hourly calendar)
