@@ -6,7 +6,7 @@ import Header from './Header.vue';
 import Sidebar from './Sidebar.vue';
 import Footer from './Footer.vue';
 import SearchDialog from './SearchDialog.vue';
-import { NAV_HEIGHT, HERO_HEIGHT } from '../utils/constants';
+import { initLayoutController } from './global';
 
 const props = withDefaults(
   defineProps<{
@@ -27,14 +27,8 @@ const feedURL = computed(() => {
 const timestamp = computed(() => undefined);
 
 onMounted(() => {
-  // scroll behavior: hero pins after scroll (mirrors original)
-  const hero = document.getElementById('hero-banner');
-  const onScroll = () => {
-    if (!hero) return;
-    const scrolled = window.scrollY > HERO_HEIGHT - 0;
-    hero.classList.toggle('fixed', false);
-  };
-  window.addEventListener('scroll', onScroll);
+  // hero scroll pinning + header collision hiding (port of global.ts)
+  initLayoutController();
 });
 </script>
 
@@ -58,7 +52,7 @@ onMounted(() => {
         <h1
           class="lg:z-12 lt-lg:z-10 w-full pt-5rem pb-3rem text-4xl font-quicksand font-bold text-center select-none outline-none pointer-events-none"
         >
-          <router-link to="/" class="pointer-events-auto cursor-pointer">
+          <router-link to="/" data-header-collision-source class="pointer-events-auto cursor-pointer">
             <span>🌸 Anime Garden</span>
           </router-link>
         </h1>
@@ -67,7 +61,7 @@ onMounted(() => {
         <div
           class="lg:z-12 lt-lg:z-10 w-full pt-5rem pb-3rem text-4xl font-quicksand font-bold text-center select-none outline-none pointer-events-none"
         >
-          <router-link to="/" class="pointer-events-auto cursor-pointer">
+          <router-link to="/" data-header-collision-source class="pointer-events-auto cursor-pointer">
             <span>🌸 Anime Garden</span>
           </router-link>
         </div>

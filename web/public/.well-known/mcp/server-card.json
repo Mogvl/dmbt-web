@@ -1,0 +1,39 @@
+{
+  "protocolVersion": "2025-03-26",
+  "name": "animegarden",
+  "description": "Search anime torrent resources aggregated from 動漫花園, 蜜柑计划, 萌番组, ANi with Anime Garden. Provides rich filters (fansub groups, resource types, keywords, include/exclude, publish time, bangumi subjects).",
+  "websiteUrl": "https://localhost:9700",
+  "icons": ["https://animes.garden/favicon.svg"],
+  "capabilities": {
+    "tools": {
+      "search_resources": {
+        "name": "search_resources",
+        "title": "Search anime torrent resources aggregated from 動漫花園, 蜜柑计划, 萌番组, ANi with Anime Garden",
+        "description": "Search anime resources with flexible filters. Supports AND-combination across different filter groups, and OR-combination within the same group (e.g. fansubs, publishers, types, subjects, include, exclude). The search option performs tokenized search and takes precedence over include; keywords requires the title to contain ALL values; exclude blocks resources containing ANY value.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "fansubs": { "type": "array", "items": { "type": "string" }, "description": "Fansub group names. Match ANY value (OR)." },
+            "publishers": { "type": "array", "items": { "type": "string" }, "description": "Publisher names. Match ANY value (OR). Combined with fansubs in OR logic within this group." },
+            "types": { "type": "array", "items": { "type": "string", "enum": ["动画", "合集", "音乐", "日剧", "RAW", "漫画", "游戏", "特摄", "其他"] } },
+            "before": { "type": "string", "format": "date-time", "description": "Upper time bound (inclusive): createdAt <= before. Accepts date string or timestamp." },
+            "after": { "type": "string", "format": "date-time", "description": "Lower time bound (inclusive): createdAt >= after. Accepts date string or timestamp." },
+            "subjects": { "type": "array", "items": { "type": "number" }, "description": "Bangumi subject IDs. Match ANY value (OR)." },
+            "search": { "type": "array", "items": { "type": "string" }, "description": "Full-text query terms (tokenized search). Takes precedence over include." },
+            "include": { "type": "array", "items": { "type": "string" }, "description": "Title-contains terms. Match ANY value (OR). Only effective when search is not provided." },
+            "keywords": { "type": "array", "items": { "type": "string" }, "description": "Required title keywords. Title must contain ALL values (AND)." },
+            "exclude": { "type": "array", "items": { "type": "string" }, "description": "Blocked title keywords. Exclude resources containing ANY value." }
+          }
+        }
+      }
+    },
+    "resources": {
+      "resource_detail": {
+        "name": "resource_detail",
+        "uriTemplate": "animegarden://resources/{provider}/{providerId}",
+        "title": "Anime Garden Resource Detail",
+        "mimeType": "application/json"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Anime Garden API",
+  "description": "Anime Garden 是動漫花園資源網的第三方镜像站以及动画 BT 资源聚合站。提供开放 API、动画放送时间表、高级搜索、自定义 RSS 订阅及 MCP 服务。",
+  "websiteUrl": "https://localhost:9700",
+  "mcp": {
+    "serverCard": "https://localhost:9700/.well-known/mcp/server-card.json",
+    "endpoints": ["https://localhost:9701/mcp"]
+  }
+}

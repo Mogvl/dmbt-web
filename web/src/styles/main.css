@@ -130,6 +130,90 @@ html body[data-scroll-locked] {
   );
 }
 
+/* hero scroll pinning (port of layout.css / sidebar.css) */
+#hero-search.fix-hero {
+  position: fixed;
+  top: 0;
+}
+
+#hero-banner {
+  border-bottom: 1px solid rgb(187 187 187 / 20%);
+}
+
+#hero-placeholder.fix-hero {
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  background: rgb(254 248 247 / 80%);
+  border-bottom: 1px solid rgb(187 187 187 / 20%);
+  transition: all 0.2s;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+.dark #hero-placeholder.fix-hero {
+  background: rgb(9 2 1 / 80%);
+}
+
+.sidebar-root {
+  --sidebar-pt: var(--hero-height);
+  width: 0;
+}
+
+.sidebar-root.fix-hero {
+  --sidebar-pt: var(--nav-height) !important;
+}
+
+.sidebar-wrapper {
+  height: calc(100vh - var(--sidebar-pt));
+  left: 0;
+  width: 200px;
+  position: absolute;
+  border-right: 1px solid var(--color-zinc-200);
+  flex-shrink: 0;
+  flex-grow: 0;
+  z-index: 5;
+  background: var(--color-zinc-50);
+}
+.dark .sidebar-wrapper {
+  background: var(--color-zinc-900);
+  border-right-color: var(--color-zinc-800);
+}
+
+.sidebar-root.fix-hero .sidebar-wrapper {
+  position: fixed;
+  top: var(--nav-height);
+  height: calc(100vh - var(--nav-height));
+}
+
+.sidebar-trigger {
+  width: max-content;
+  padding: 4px 12px 4px 8px;
+  color: var(--color-neutral-700);
+  border: 1px solid var(--color-zinc-300);
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
+  background: var(--color-zinc-50);
+  box-shadow: 0 2px 3px rgb(10 10 10 / 10%);
+  position: relative;
+  top: 8px;
+  user-select: none;
+  cursor: pointer;
+}
+.dark .sidebar-trigger {
+  background: var(--color-zinc-900);
+  border-color: var(--color-zinc-700);
+}
+.sidebar-trigger:hover {
+  background: var(--color-zinc-100);
+}
+
+.sidebar-root.fix-hero .sidebar-trigger {
+  position: fixed;
+  top: calc(var(--nav-height) + 8px);
+}
+
 /* main width container */
 .main {
   width: 100%;

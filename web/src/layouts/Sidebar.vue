@@ -119,23 +119,21 @@ function itemLink(item: any) {
 </script>
 
 <template>
-  <div class="sidebar-root relative">
+  <div class="sidebar-root">
     <!-- trigger -->
     <div
       v-if="!sidebar.isOpen"
-      class="fixed left-0 top-[128px] z-10 cursor-pointer select-none font-quicksand font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+      class="sidebar-trigger font-quicksand font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 text-2xl"
       title="打开收藏夹"
       @click="sidebar.open()"
     >
-      <div class="flex items-center gap-1 px-1 py-2 text-2xl">
-        <span class="i-carbon:bookmark"></span>
-      </div>
+      🔖
     </div>
 
     <!-- content -->
     <div
       v-if="sidebar.isOpen"
-      class="fixed left-0 top-[128px] bottom-0 z-10 w-[240px] overflow-y-auto border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950"
+      class="sidebar-wrapper overflow-y-auto"
     >
       <div class="flex items-center justify-between px-4 py-3">
         <span class="text-sm font-bold text-base-900">{{ collection?.name ?? '收藏夹' }}</span>

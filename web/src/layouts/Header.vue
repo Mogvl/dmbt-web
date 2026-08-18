@@ -119,6 +119,7 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
 
       <!-- 动画 -->
       <Dropdown
+        data-nav-collision-target="anime"
         class="pointer-events-auto [&:hover>a]:bg-zinc-100! dark:[&:hover>a]:bg-zinc-800!"
         trigger="动画"
         :trigger-class="'rounded-md p-2'"
@@ -161,6 +162,7 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
 
       <!-- 字幕组 -->
       <Dropdown
+        data-nav-collision-target="fansubs"
         class="pointer-events-auto [&:hover>a]:bg-zinc-100! dark:[&:hover>a]:bg-zinc-800!"
         trigger="字幕组"
         menu-class="w-[160px] max-h-[494px] overflow-y-auto"
@@ -179,6 +181,7 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
 
       <!-- 资源 -->
       <Dropdown
+        data-nav-collision-target="types"
         class="pointer-events-auto [&:hover>a]:bg-zinc-100! dark:[&:hover>a]:bg-zinc-800!"
         trigger="资源"
         menu-class="w-max overflow-y-auto"
