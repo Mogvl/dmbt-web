@@ -46,7 +46,7 @@ func NewRegistry(sys System) *Registry {
 	reg.providers["dmhy"] = newDmhyProvider(sys)
 	reg.providers["moe"] = newMoeProvider()
 	reg.providers["mikan"] = newMikanProvider()
-	reg.providers["ani"] = newAniProvider()
+	reg.providers["ani"] = newAniProvider(sys)
 	return reg
 }
 
@@ -157,12 +157,28 @@ func newMikanProvider() *Provider {
 	}
 }
 
-func newAniProvider() *Provider {
+func newAniProvider(sys System) *Provider {
 	return &Provider{
 		ID:   "ani",
 		Name: "ANi",
 		FetchLatest: func(retry int) ([]scraper.ScrapedResource, error) {
-			return scraper.FetchAniLatest(retry)
+			// ANi override: single RSS fetch, then filter against the DB.
+			resources, err := scraper.FetchAniLatest(retry)
+			if err != nil || sys == nil {
+				return resources, err
+			}
+			ids := idsOf(resources)
+			existing, err := sys.ResourceIDsExist("ani", ids)
+			if err != nil {
+				return resources, err
+			}
+			var out []scraper.ScrapedResource
+			for _, r := range resources {
+				if !existing[r.ProviderID] {
+					out = append(out, r)
+				}
+			}
+			return out, nil
 		},
 		FetchPages: func(_, _ int) ([]scraper.ScrapedResource, error) {
 			return scraper.FetchAniLatest(5)
