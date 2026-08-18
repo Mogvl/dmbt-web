@@ -112,6 +112,8 @@ curl -X POST http://localhost:9701/mcp -H 'content-type: application/json' \
 - 原版的 Cloudflare Worker（旧版 301 跳转器 + legacy filter 参数翻译）是独立部署层的
   兼容层；本项目前后端同源部署，无需该组件。
 - Redis（查询/详情缓存、跨进程 RPC）在本实现中以进程内缓存替代（SQLite 单机部署）。
+- 页面的 `Accept: text/markdown` 内容协商需要 SSR 层；本 SPA 实现由静态
+  `/llms.txt` 提供同等信息（站点结构、API 入口、关键事实）。
 
 ## License
 
