@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://localhost:9700/</loc></url>
+  <url><loc>https://localhost:9700/anime</loc></url>
+  <url><loc>https://localhost:9700/resources/1?preset=bangumi&amp;type=动画</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=动画</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=合集</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=音乐</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=日剧</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=RAW</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=漫画</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=游戏</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=特摄</loc></url>
+  <url><loc>https://localhost:9700/resources/1?type=其他</loc></url>
+  <url><loc>https://localhost:9700/docs/api</loc></url>
+</urlset>

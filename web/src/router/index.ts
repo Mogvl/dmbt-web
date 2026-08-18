@@ -49,13 +49,13 @@ const routes: RouteRecordRaw[] = [
         path: 'about',
         name: 'about',
         component: () => import('../pages/AboutPage.vue')
-      },
-      {
-        path: 'iframe',
-        name: 'iframe',
-        component: () => import('../pages/IframePage.vue')
       }
     ]
+  },
+  {
+    path: '/iframe',
+    name: 'iframe',
+    component: () => import('../pages/IframePage.vue')
   },
   {
     path: '/:pathMatch(.*)*',

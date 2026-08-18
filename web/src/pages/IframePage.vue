@@ -49,7 +49,7 @@ const title = computed(() => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full min-h-screen">
     <div class="p-4">
       <div class="mb-4 text-lg font-bold">{{ title }}</div>
       <div v-if="loading" class="py-12 flex justify-center">

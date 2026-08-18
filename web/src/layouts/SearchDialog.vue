@@ -121,7 +121,7 @@ function selectGoToSearch(text: string, source: string) {
     return;
   }
   const filter = toFilterOptions(parseSearchInput(inputText));
-  const params = stringifyURLSearch({ ...filter, page: 1, pageSize: 30 });
+  const params = stringifyURLSearch(filter);
   router.push({ path: '/resources/1', query: Object.fromEntries(params) });
   close();
 }
