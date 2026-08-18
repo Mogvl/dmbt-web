@@ -32,6 +32,9 @@ type Config struct {
 
 	// CORS origins for the web frontend
 	CORSOrigins []string
+
+	// AppHost mirrors APP_HOST: site hostname for feed/detail URLs.
+	AppHost string
 }
 
 func env(key, def string) string {
@@ -73,8 +76,14 @@ func Load() *Config {
 		AdminToken:        env("ADMIN_TOKEN", ""),
 		ScrapeInterval:    time.Duration(envInt("SCRAPE_INTERVAL_MIN", 10)) * time.Minute,
 		ScrapeTimeout:     time.Duration(envInt("SCRAPE_TIMEOUT_SEC", 60)) * time.Second,
+		AppHost:           env("APP_HOST", "animes.garden"),
 	}
 	// Default CORS: allow the frontend dev origin
 	cfg.CORSOrigins = []string{"http://localhost:9700"}
 	return cfg
+}
+
+// PublicURLHost returns the site host for feed/detail URLs (APP_HOST).
+func (c *Config) PublicURLHost() string {
+	return c.AppHost
 }
