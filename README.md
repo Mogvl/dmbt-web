@@ -107,6 +107,12 @@ curl -X POST http://localhost:9701/mcp -H 'content-type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
+## Out of scope
+
+- 原版的 Cloudflare Worker（旧版 301 跳转器 + legacy filter 参数翻译）是独立部署层的
+  兼容层；本项目前后端同源部署，无需该组件。
+- Redis（查询/详情缓存、跨进程 RPC）在本实现中以进程内缓存替代（SQLite 单机部署）。
+
 ## License
 
 AGPL-3.0 (matching the original AnimeGarden license).
