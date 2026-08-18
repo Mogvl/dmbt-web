@@ -141,8 +141,11 @@ func parseMikanRow(tds []*html.Node, now time.Time) (ScrapedResource, bool) {
 		providerID = rest
 		break
 	}
-	for _, span := range htmlx.Tag(tds[2], "span") {
-		if v := htmlx.Attr(span, "data-clipboard-text"); v != "" {
+	// the magnet is carried on an element with data-clipboard-text (an <a>)
+	for _, el := range htmlx.Filter(tds[2], func(n *html.Node) bool {
+		return n.Type == html.ElementNode && htmlx.Attr(n, "data-clipboard-text") != ""
+	}) {
+		if v := htmlx.Attr(el, "data-clipboard-text"); v != "" {
 			magnet, _ = splitOnce(v, "&")
 			break
 		}
