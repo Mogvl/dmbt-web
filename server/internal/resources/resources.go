@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"regexp"
 	"sort"
 	"strings"
@@ -520,18 +521,30 @@ func (s *Store) UpsertResources(resources []NewResource, indexSubject bool, matc
 	var pending []pendingTransform
 
 	for _, r := range unique {
-		publisherID, fansubID, err := s.ensureParties(r)
-		if err != nil {
-			return nil, err
-		}
-		tf, errors := s.TransformNewResources(r, indexSubject, matchSubject)
-		if errors != nil {
-			result.Errors = append(result.Errors, errors...)
-			continue
-		}
-		tf.PublisherID = publisherID
-		tf.FansubID = fansubID
-		pending = append(pending, pendingTransform{tf: tf})
+		func() {
+			defer func() {
+				if p := recover(); p != nil {
+					// log the offending title so the crash can be diagnosed,
+					// then keep the rest of the batch (matches the original
+					// which throws per-resource and continues).
+					log.Printf("ERROR upsert panic on %s:%s title=%q: %v", r.Provider, r.ProviderID, r.Title, p)
+					result.Errors = append(result.Errors, fmt.Sprintf("panic %s:%s: %v", r.Provider, r.ProviderID, p))
+				}
+			}()
+			publisherID, fansubID, err := s.ensureParties(r)
+			if err != nil {
+				result.Errors = append(result.Errors, err.Error())
+				return
+			}
+			tf, errors := s.TransformNewResources(r, indexSubject, matchSubject)
+			if errors != nil {
+				result.Errors = append(result.Errors, errors...)
+				return
+			}
+			tf.PublisherID = publisherID
+			tf.FansubID = fansubID
+			pending = append(pending, pendingTransform{tf: tf})
+		}()
 	}
 
 	for _, p := range pending {

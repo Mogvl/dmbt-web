@@ -10,8 +10,8 @@ import { formatInTimeZone } from '../utils/date';
 
 const router = useRouter();
 
-const season = getActiveSeason();
-const seasonMeta = getCalendarSeason(season);
+const season = ref(getActiveSeason());
+const seasonMeta = computed(() => getCalendarSeason(season.value));
 
 const loading = ref(true);
 const resources = ref<Resource[]>([]);
@@ -35,6 +35,16 @@ const weekdayText = computed(() => {
 async function load() {
   loading.value = true;
   failed.value = false;
+  // season comes from the bgm calendar mirror (like the original home loader)
+  try {
+    const resp = await fetch('/bgmx/calendar');
+    const data = await resp.json();
+    if (data.ok && data.data?.seasons?.length > 0) {
+      season.value = data.data.seasons[0];
+    }
+  } catch {
+    // keep the computed active season
+  }
   const resp = await fetchResources({
     preset: 'bangumi',
     types: ['动画'],

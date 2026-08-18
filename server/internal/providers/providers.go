@@ -44,8 +44,8 @@ type Registry struct {
 func NewRegistry(sys System) *Registry {
 	reg := &Registry{providers: map[string]*Provider{}}
 	reg.providers["dmhy"] = newDmhyProvider(sys)
-	reg.providers["moe"] = newMoeProvider()
-	reg.providers["mikan"] = newMikanProvider()
+	reg.providers["moe"] = newMoeProvider(sys)
+	reg.providers["mikan"] = newMikanProvider(sys)
 	reg.providers["ani"] = newAniProvider(sys)
 	return reg
 }
@@ -111,17 +111,17 @@ func newDmhyProvider(sys System) *Provider {
 	}
 }
 
-func newMoeProvider() *Provider {
+func newMoeProvider(sys System) *Provider {
 	return &Provider{
 		ID:   "moe",
 		Name: "萌番组",
 		FetchLatest: func(retry int) ([]scraper.ScrapedResource, error) {
-			return FetchLatestPages(nil, "moe", func(page int) ([]scraper.ScrapedResource, error) {
+			return FetchLatestPages(sys, "moe", func(page int) ([]scraper.ScrapedResource, error) {
 				return scraper.FetchMoePage(page, retry)
 			})
 		},
 		FetchPages: func(start, end int) ([]scraper.ScrapedResource, error) {
-			return FetchResourcePages(nil, "moe", func(page int) ([]scraper.ScrapedResource, error) {
+			return FetchResourcePages(sys, "moe", func(page int) ([]scraper.ScrapedResource, error) {
 				return scraper.FetchMoePage(page, 5)
 			}, start, end)
 		},
@@ -134,17 +134,17 @@ func newMoeProvider() *Provider {
 	}
 }
 
-func newMikanProvider() *Provider {
+func newMikanProvider(sys System) *Provider {
 	return &Provider{
 		ID:   "mikan",
 		Name: "蜜柑计划",
 		FetchLatest: func(retry int) ([]scraper.ScrapedResource, error) {
-			return FetchLatestPages(nil, "mikan", func(page int) ([]scraper.ScrapedResource, error) {
+			return FetchLatestPages(sys, "mikan", func(page int) ([]scraper.ScrapedResource, error) {
 				return scraper.FetchMikanPage(page, retry)
 			})
 		},
 		FetchPages: func(start, end int) ([]scraper.ScrapedResource, error) {
-			return FetchResourcePages(nil, "mikan", func(page int) ([]scraper.ScrapedResource, error) {
+			return FetchResourcePages(sys, "mikan", func(page int) ([]scraper.ScrapedResource, error) {
 				return scraper.FetchMikanPage(page, 5)
 			}, start, end)
 		},
