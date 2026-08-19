@@ -53,6 +53,49 @@ web/      Vue 3 + Vite + Tailwind v4 frontend (port 9700)
 
 镜像自动构建并发布到 GHCR（每次 push main 由 GitHub Actions 触发），支持 docker compose 一键启动：
 
+`docker-compose.yml` 完整内容：
+
+```yaml
+# dmbt-web — AnimeGarden (Go + Vue) 一键部署
+#
+#   docker compose up -d
+#
+# 前端 http://localhost:9700 （nginx 同源代理 /resources /feed.xml /bgmx 等到后端）
+# 后端 http://localhost:9701 （容器内部网络，如需直连可取消注释 ports）
+#
+# 数据保存在 ./data（SQLite），修改 volume 可将数据迁移到任意目录。
+
+services:
+  dmbt-web:
+    image: ghcr.io/mogvl/dmbt-web/web:latest
+    container_name: dmbt-web
+    ports:
+      - "9700:80"
+    environment:
+      - TZ=Asia/Shanghai
+    depends_on:
+      - dmbt-server
+    restart: unless-stopped
+
+  dmbt-server:
+    image: ghcr.io/mogvl/dmbt-web/server:latest
+    container_name: dmbt-server
+    environment:
+      - PORT=9701
+      - DATA_DIR=/data
+      - CRON=true
+      - APP_HOST=animes.garden
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data:/data
+    # 如需直接暴露 API 端口:
+    # ports:
+    #   - "9701:9701"
+    restart: unless-stopped
+```
+
+使用方法：
+
 ```bash
 # 1. 拉取并启动（前端 :9700，后端容器内部 :9701）
 curl -O https://raw.githubusercontent.com/Mogvl/dmbt-web/main/docker-compose.yml
