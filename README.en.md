@@ -19,6 +19,26 @@ A **Go + Vue reimplementation** of [AnimeGarden](https://github.com/yjl9903/Anim
 
 [![home](./assets/home.jpeg)](http://localhost:9700/resources/1)
 
+## Using Skills
+
+**Anime Garden skill**: search anime resources from your self-hosted instance (shipped in this repo).
+
+**Yuc's Anime List skill**: retrieve quarterly anime lineups from yuc.wiki.
+
+Both skills ship with this repository (`skills/animegarden`, `skills/yuc`). Install with the Vercel skills CLI:
+
+```bash
+npx skills add https://github.com/Mogvl/dmbt-web --skill animegarden
+npx skills add https://github.com/Mogvl/dmbt-web --skill yuc
+```
+
+OpenClaw and similar clients can also mount the `skills/animegarden` and
+`skills/yuc` directories directly.
+
+The `animegarden` skill's API base is configured via `ANIMEGARDEN_API_BASE`
+(default `http://localhost:9701`; point it at your deployment after Docker
+Compose, e.g. `https://anime.example.com:9701`).
+
 ## Using MCP
 
 MCP endpoint: `http://localhost:9701/mcp`.
