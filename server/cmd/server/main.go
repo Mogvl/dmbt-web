@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -32,7 +33,13 @@ func main() {
 		log.Fatalf("failed to init tokenizer: %v", err)
 	}
 
-	sqlDB, err := db.Open(cfg.DatabaseURL)
+	// DatabaseURL wins when set; otherwise resolve against DataDir so the
+	// DATA_DIR env (docker /data volume) is honored regardless of cwd.
+	dbURL := cfg.DatabaseURL
+	if dbURL == "" {
+		dbURL = filepath.Join(cfg.DataDir, "animegarden.db")
+	}
+	sqlDB, err := db.Open(dbURL)
 	if err != nil {
 		log.Fatalf("failed to open database: %v", err)
 	}

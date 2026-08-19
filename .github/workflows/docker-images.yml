@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./server
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta-server.outputs.tags }}
           labels: ${{ steps.meta-server.outputs.labels }}
@@ -67,6 +68,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./web
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}

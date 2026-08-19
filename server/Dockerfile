@@ -12,17 +12,17 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/server ./cmd/serve
 
 FROM alpine:3.20
 
-RUN apk add --no-cache ca-certificates tzdata \
+RUN apk add --no-cache ca-certificates tzdata su-exec \
     && addgroup -S animegarden && adduser -S animegarden -G animegarden
 
 WORKDIR /app
 COPY --from=build /out/server /app/server
+COPY entrypoint.sh /entrypoint.sh
 
-# data directory (bind-mount /data in compose)
-RUN mkdir -p /data && chown animegarden:animegarden /data
+RUN chmod +x /entrypoint.sh
 
-USER animegarden
-
+# data directory (bind-mount /data in compose); ownership is fixed by the
+# entrypoint so host-created bind mounts (root-owned) work out of the box.
 ENV PORT=9701 \
     DATA_DIR=/data \
     CRON=true \
@@ -30,4 +30,4 @@ ENV PORT=9701 \
 
 EXPOSE 9701
 
-CMD ["/app/server"]
+ENTRYPOINT ["/entrypoint.sh"]
