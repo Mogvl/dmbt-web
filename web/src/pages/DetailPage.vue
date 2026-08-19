@@ -1,15 +1,14 @@
 <script setup lang="ts">
-// Detail page mirroring pages/detail.$provider.$providerId/route.tsx with the
-// file tree.
+// Detail page mirroring pages/detail.$provider.$providerId/route.tsx +
+// FileTree.tsx: download card (PikPak), magnet + original link, HTML
+// description, publisher/fansub avatars, published time, file tree card.
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { toast } from 'vue-sonner';
-import { fetchResourceDetail, parseSize, type ResourceDetail } from '../api/client';
-import { formatChinaTime } from '../utils/date';
+import { useRoute } from 'vue-router';
+import { fetchResourceDetail, type ResourceDetail } from '../api/client';
+import { formatInTimeZone } from '../utils/date';
 import { getPikPakUrlChecker, truncate } from '../utils/constants';
 
 const route = useRoute();
-const router = useRouter();
 
 const provider = computed(() => String(route.params.provider));
 const providerId = computed(() => String(route.params.providerId));
@@ -17,44 +16,33 @@ const providerId = computed(() => String(route.params.providerId));
 const loading = ref(true);
 const resource = ref<any>(null);
 const detail = ref<ResourceDetail | null>(null);
-const isDeleted = ref(false);
 const error = ref<any>(undefined);
 
-// file tree state
-const expanded = ref<Set<string>>(new Set());
-interface FileNode {
-  name: string;
-  size: string;
-  children: FileNode[];
-  path?: string;
-}
-const treeRoots = ref<FileNode[]>([]);
+// magnet = resource.magnet || first magnet: url of detail
+const magnet = computed(() => {
+  if (resource.value?.magnet) return resource.value.magnet;
+  const m = detail.value?.magnets.find((m) => m.url.startsWith('magnet:'));
+  return m?.url ?? '';
+});
+const pikpakUrl = computed(() => (magnet.value ? getPikPakUrlChecker(magnet.value) : ''));
 
-function buildTree(files: Array<{ name: string; size: string }>): FileNode[] {
-  const root: FileNode[] = [];
-  const dirs: Record<string, FileNode> = {};
-  for (const file of files) {
-    const parts = file.name.split('/');
-    let node = root;
-    let path = '';
-    for (let i = 0; i < parts.length - 1; i++) {
-      path += (path ? '/' : '') + parts[i];
-      let dir = dirs[path];
-      if (!dir) {
-        dir = { name: parts[i], size: '', children: [], path: path };
-        dirs[path] = dir;
-        node.push(dir);
-      }
-      node = dir.children;
-    }
-    node.push({ name: parts[parts.length - 1], size: file.size, children: [], path: file.name });
-  }
-  return root;
-}
-
-const magnetWithTracker = computed(() =>
-  resource.value ? resource.value.magnet + (resource.value.tracker ?? '') : ''
+// only one 磁力链接 entry: magnet + tracker
+const magnetLine = computed(() =>
+  magnet.value ? `${resource.value?.magnet ?? ''}${resource.value?.tracker ?? ''}` : ''
 );
+
+function splitMagnetURL(m: string) {
+  return m?.split('&')[0] ?? '';
+}
+
+// description: strip 簡介: prefix like the original
+const descriptionHtml = computed(() => {
+  const desc = detail.value?.description ?? '';
+  return desc.replace(
+    /(<strong>)?簡介:(&nbsp;)*(<\/strong>)?(<br>)?(<hr>)?/,
+    '<h2 class="text-xl font-bold">简介</h2>'
+  );
+});
 
 async function load() {
   loading.value = true;
@@ -63,12 +51,8 @@ async function load() {
   if (resp.ok) {
     resource.value = resp.resource;
     detail.value = resp.detail;
-    isDeleted.value = resp.isDeleted ?? false;
     if (resp.resource) {
       document.title = truncate(resp.resource.title, 70);
-    }
-    if (resp.detail) {
-      treeRoots.value = buildTree(resp.detail.files);
     }
   } else {
     error.value = resp.error;
@@ -79,33 +63,59 @@ async function load() {
 onMounted(load);
 watch(() => route.fullPath, load);
 
-const toggleDir = (path: string) => {
-  const next = new Set(expanded.value);
-  if (next.has(path)) next.delete(path);
-  else next.add(path);
-  expanded.value = next;
-};
+const publishedText = computed(() =>
+  resource.value
+    ? formatInTimeZone(new Date(resource.value.createdAt), 'Asia/Shanghai', 'yyyy-MM-dd HH:mm')
+    : ''
+);
 
-const isDir = (node: FileNode) => node.children.length > 0;
+// --- file tree ---
+interface FileNode {
+  name: string;
+  size: string;
+  children: FileNode[];
+}
 
-const copyMagnet = async () => {
-  try {
-    await navigator.clipboard.writeText(magnetWithTracker.value);
-    toast.success('复制磁力链接成功', { duration: 3000 });
-  } catch {
-    toast.error('复制磁力链接失败', { duration: 3000 });
+function getDirTree(files: Array<{ name: string; size: string }>): FileNode[] {
+  const root: FileNode[] = [];
+  const dirs: Record<string, FileNode> = {};
+  for (const file of files) {
+    const parts = file.name.split('/');
+    let node = root;
+    let path = '';
+    for (let i = 0; i < parts.length - 1; i++) {
+      path += (path ? '/' : '') + parts[i];
+      let dir = dirs[path];
+      if (!dir) {
+        dir = { name: parts[i], size: '', children: [] };
+        dirs[path] = dir;
+        node.push(dir);
+      }
+      node = dir.children;
+    }
+    node.push({ name: parts[parts.length - 1], size: file.size, children: [] });
   }
-};
+  return root;
+}
 
-// normalized description (mirrors scraper normalizeDescription)
-const normalizedDescription = computed(() => {
-  const desc = detail.value?.description ?? '';
-  return desc.replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]+>/g, '');
-});
+const tree = computed(() => getDirTree(detail.value?.files ?? []));
 
-const goInfoHash = (hash: string) => {
-  router.push(`/detail/infohash/`).catch(() => {});
-};
+function fileIcon(name: string) {
+  const ext = name.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'mp4':
+    case 'mkv':
+      return '▶';
+    case 'ass':
+      return '字';
+    case 'rar':
+    case '7z':
+    case 'zip':
+      return '🗜';
+    default:
+      return '📄';
+  }
+}
 </script>
 
 <template>
@@ -121,156 +131,151 @@ const goInfoHash = (hash: string) => {
     </div>
 
     <template v-else>
-      <div class="mb-6">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-xl font-bold leading-snug">{{ resource.title }}</h1>
-            <div class="mt-2 flex items-center gap-4 text-sm text-zinc-400">
-              <span>发布于 {{ formatChinaTime(new Date(resource.createdAt)) }}</span>
-              <span>大小 {{ parseSize(resource.size) }}</span>
+      <div class="detail mt-4vh w-full space-y-4">
+        <h1 class="text-xl font-bold resource-title">
+          <span>{{ resource.title }}</span>
+        </h1>
+
+        <!-- download card -->
+        <div class="download-link rounded-md shadow-box">
+          <h2 class="text-lg font-bold border-b px-4 py-2 flex items-center">
+            <a
+              :href="pikpakUrl"
+              target="_blank"
+              class="play text-link-active underline underline-dotted underline-offset-6"
+            >
+              下载链接
+            </a>
+          </h2>
+          <div class="p-4 space-y-1 overflow-auto whitespace-nowrap">
+            <div class="flex">
+              <span class="text-base-600 select-none inline-block w-[160px] min-w-[160px] lt-sm:w-[120px] lt-sm:min-w-[120px]">
+                <a
+                  :href="pikpakUrl"
+                  target="_blank"
+                  class="play text-link-active underline underline-dotted underline-offset-6"
+                >
+                  在线播放
+                </a>
+              </span>
+              <a :href="pikpakUrl" target="_blank" class="play text-link inline-block flex-1 pr-4">
+                使用 PikPak 播放
+              </a>
+            </div>
+            <div class="flex">
+              <span class="text-base-600 select-none inline-block w-[160px] min-w-[160px] lt-sm:w-[120px] lt-sm:min-w-[120px]">
+                磁力链接
+              </span>
+              <a :href="magnetLine" class="download text-link inline-block flex-1 pr-4">
+                {{ splitMagnetURL(magnetLine) }}
+              </a>
+            </div>
+            <div class="flex">
+              <span class="text-base-600 select-none inline-block w-[160px] min-w-[160px] lt-sm:w-[120px] lt-sm:min-w-[120px]">
+                原链接
+              </span>
+              <a :href="resource.href" target="_blank" class="text-link inline-block flex-1 pr-4">
+                {{ resource.href }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- description -->
+        <div
+          v-if="descriptionHtml"
+          class="description"
+          v-html="descriptionHtml"
+        ></div>
+
+        <!-- publisher / fansub -->
+        <div class="publisher">
+          <h2 class="text-lg font-bold pb-4">{{ resource.fansub ? '发布者 / 字幕组' : '发布者' }}</h2>
+          <div class="flex gap-8">
+            <div>
               <router-link
-                :to="{ path: '/resources/1', query: { type: resource.type } }"
-                class="text-link-secondary text-xs"
+                :to="{ path: '/resources/1', query: { publisher: resource.publisher?.name ?? '' } }"
+                class="block text-left"
               >
-                {{ resource.type }}
+                <img
+                  :src="resource.publisher?.avatar || 'https://share.dmhy.org/images/defaultUser.png'"
+                  :alt="`${resource.publisher?.name} avatar`"
+                  class="inline-block w-[100px] h-[100px] rounded"
+                  @error="(e: Event) => ((e.target as HTMLImageElement).src = 'https://share.dmhy.org/images/defaultUser.png')"
+                />
+                <span class="text-link block mt-2">{{ resource.publisher?.name }}</span>
               </router-link>
             </div>
-            <div class="mt-3">
-              <div class="flex items-center gap-2">
-                <a
-                  :href="magnetWithTracker"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-sky-600 hover:bg-sky-500 text-white text-sm"
-                >
-                  🧲 磁力链接
-                </a>
-                <a
-                  :href="getPikPakUrlChecker(resource.magnet)"
-                  target="_blank"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                >
-                  ▶ 在线播放 (PikPak)
-                </a>
-                <button
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  @click="copyMagnet"
-                >
-                  📋 复制链接
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="text-right shrink-0">
-            <div class="flex items-center gap-2 justify-end">
-              <img
-                v-if="resource.publisher?.avatar"
-                :src="resource.publisher.avatar"
-                class="w-8 h-8 rounded-full object-cover"
-                alt=""
-              />
-              <div class="text-sm">
-                <div class="font-medium">{{ resource.publisher?.name }}</div>
-                <div v-if="resource.fansub" class="text-base-400">
-                  {{ resource.fansub.name }}
-                </div>
-              </div>
+            <div v-if="resource.fansub">
+              <router-link
+                :to="{ path: '/resources/1', query: { fansub: resource.fansub.name } }"
+                class="block w-auto text-left"
+              >
+                <img
+                  :src="resource.fansub.avatar || 'https://share.dmhy.org/images/defaultUser.png'"
+                  :alt="`${resource.fansub.name} avatar`"
+                  class="inline-block w-[100px] h-[100px] rounded"
+                  @error="(e: Event) => ((e.target as HTMLImageElement).src = 'https://share.dmhy.org/images/defaultUser.png')"
+                />
+                <span class="text-link block mt-2">{{ resource.fansub.name }}</span>
+              </router-link>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- description -->
-      <div v-if="normalizedDescription" class="mb-6">
-        <h2 class="text-base font-bold mb-2">简介</h2>
-        <pre class="whitespace-pre-wrap bg-zinc-50 dark:bg-zinc-800 rounded-md p-4 text-sm text-base-700 leading-relaxed overflow-x-auto">{{ normalizedDescription }}</pre>
-      </div>
-
-      <!-- magnets -->
-      <div v-if="detail?.magnets?.length" class="mb-6">
-        <h2 class="text-base font-bold mb-2">下载</h2>
-        <div class="space-y-2">
-          <div
-            v-for="(m, idx) in detail.magnets"
-            :key="idx"
-            class="flex items-center justify-between gap-2 bg-zinc-50 dark:bg-zinc-800 rounded-md px-4 py-2"
-          >
-            <span class="text-sm font-medium shrink-0 w-[140px]">{{ m.name }}</span>
-            <a
-              :href="m.url"
-              target="_blank"
-              class="text-link text-sm truncate"
-              :title="m.url"
-            >
-              {{ m.url }}
-            </a>
-          </div>
+        <div>
+          <span class="font-bold">发布于&nbsp;</span>
+          <span>{{ publishedText }}</span>
         </div>
-      </div>
 
-      <!-- file tree -->
-      <div v-if="detail?.files?.length" class="mb-6">
-        <h2 class="text-base font-bold mb-2 flex items-center gap-2">
-          文件列表
-          <span v-if="detail.hasMoreFiles" class="text-xs font-normal text-base-400">
-            (仅显示部分文件)
-          </span>
-        </h2>
-        <div class="bg-zinc-50 dark:bg-zinc-800 rounded-md p-2 text-sm">
-          <div v-for="node in treeRoots" :key="node.path ?? node.name" class="file-node">
-            <div
-              v-if="isDir(node)"
-              class="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded"
-              @click="toggleDir(node.path)"
-            >
-              <span class="text-xs">{{ expanded.has(node.path) ? '▼' : '▶' }}</span>
-              <span class="font-medium">📁 {{ node.name }}/</span>
-            </div>
-            <div
-              v-else
-              class="flex items-center justify-between gap-2 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700"
-            >
-              <span class="truncate">📄 {{ node.name }}</span>
-              <span v-if="node.size" class="text-xs text-base-400 shrink-0">{{ node.size }}</span>
-            </div>
-            <div v-if="isDir(node) && expanded.has(node.path)" class="ml-4">
-              <div v-for="child in node.children" :key="child.path ?? child.name" class="file-node">
-                <div
-                  v-if="isDir(child)"
-                  class="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded"
-                  @click="toggleDir(child.path)"
-                >
-                  <span class="text-xs">{{ expanded.has(child.path) ? '▼' : '▶' }}</span>
-                  <span class="font-medium">📁 {{ child.name }}/</span>
+        <!-- files card -->
+        <div class="file-list rounded-md shadow-box">
+          <h2 class="text-lg font-bold border-b px-4 py-2">文件列表</h2>
+          <div class="mb-4 max-h-[80vh] overflow-auto px-4 py-4 space-y-2">
+            <div v-for="item in tree" :key="item.name">
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1">
+                  <span>{{ item.children.length > 0 ? '📁' : fileIcon(item.name) }}</span>
+                  <div class="text-sm text-base-600">{{ item.name }}</div>
                 </div>
-                <div
-                  v-else
-                  class="flex items-center justify-between gap-2 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700"
-                >
-                  <span class="truncate">📄 {{ child.name }}</span>
-                  <span v-if="child.size" class="text-xs text-base-400 shrink-0">{{ child.size }}</span>
+                <div class="flex-auto"></div>
+                <div v-if="item.children.length === 0" class="text-xs text-base-400 select-none">
+                  {{ item.size }}
                 </div>
-                <div v-if="isDir(child) && expanded.has(child.path)" class="ml-4">
-                  <div
-                    v-for="leaf in child.children"
-                    :key="leaf.path ?? leaf.name"
-                    class="flex items-center justify-between gap-2 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700"
-                  >
-                    <span class="truncate">📄 {{ leaf.name }}</span>
-                    <span v-if="leaf.size" class="text-xs text-base-400 shrink-0">{{ leaf.size }}</span>
+              </div>
+              <div v-if="item.children.length > 0" class="my-1 pl-4 py-1 space-y-2 border-l border-l-1">
+                <div v-for="child in item.children" :key="child.name">
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1">
+                      <span>{{ child.children.length > 0 ? '📁' : fileIcon(child.name) }}</span>
+                      <div class="text-sm text-base-600">{{ child.name }}</div>
+                    </div>
+                    <div class="flex-auto"></div>
+                    <div v-if="child.children.length === 0" class="text-xs text-base-400 select-none">
+                      {{ child.size }}
+                    </div>
+                  </div>
+                  <div v-if="child.children.length > 0" class="my-1 pl-4 py-1 space-y-2 border-l border-l-1">
+                    <div v-for="leaf in child.children" :key="leaf.name">
+                      <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-1">
+                          <span>{{ fileIcon(leaf.name) }}</span>
+                          <div class="text-sm text-base-600">{{ leaf.name }}</div>
+                        </div>
+                        <div class="flex-auto"></div>
+                        <div class="text-xs text-base-400 select-none">{{ leaf.size }}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div v-if="(detail?.files ?? []).length === 0" class="py-2 select-none text-center text-red-400">
+              种子信息解析失败
+            </div>
+            <div v-if="detail?.hasMoreFiles" class="text-base-400">...</div>
           </div>
         </div>
-      </div>
-
-      <div v-if="isDeleted" class="text-sm text-orange-600">
-        ⚠ 该资源已被标记为删除
-      </div>
-
-      <div class="mt-8 text-xs text-zinc-400 space-y-1">
-        <div>provider: {{ resource.provider }} · providerId: {{ resource.providerId }}</div>
-        <div>fetchedAt: {{ formatChinaTime(new Date(resource.fetchedAt)) }}</div>
       </div>
     </template>
   </div>

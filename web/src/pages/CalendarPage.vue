@@ -36,6 +36,38 @@ const data = ref<CalendarData | null>(null);
 const loading = ref(true);
 
 const activeDay = ref<number | null>(null);
+const yearOpen = ref(false);
+const quarterOpen = ref(false);
+
+const seasonYear = computed(() => {
+  const [y] = season.value.split('-');
+  return Number(y) || new Date().getFullYear();
+});
+const seasonQuarter = computed(() => {
+  const [, m] = season.value.split('-');
+  return Number(m) || 1;
+});
+const seasonQuarterLabel = computed(() => {
+  const map: Record<number, string> = { 1: '冬季', 4: '春季', 7: '夏季', 10: '秋季' };
+  return map[seasonQuarter.value] ?? `${seasonQuarter.value} 月`;
+});
+const currentYear = new Date().getFullYear();
+const yearOptions = computed(() => [currentYear + 1, currentYear, currentYear - 1, currentYear - 2]);
+const quarterOptions = [
+  { month: 1, label: '冬季' },
+  { month: 4, label: '春季' },
+  { month: 7, label: '夏季' },
+  { month: 10, label: '秋季' }
+];
+
+function goSeason(year: number, month: number) {
+  const next = `${year}-${String(month).padStart(2, '0')}`;
+  if (next !== season.value) {
+    router.push(`/calendar/${next}`);
+  }
+  yearOpen.value = false;
+  quarterOpen.value = false;
+}
 
 async function load() {
   loading.value = true;
@@ -100,18 +132,48 @@ watch(seasonHead, (h) => {
 
 <template>
   <div class="w-full pt-13 pb-24">
-    <div class="flex items-center justify-between mb-6">
+    <div class="relative flex items-center justify-between mb-6">
       <h1 class="text-2xl font-quicksand font-bold">
         {{ meta.emoji }} {{ meta.title }} 动画周历
       </h1>
-      <select
-        v-model="season"
-        class="rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm"
-      >
-        <option v-for="s in seasonOptions" :key="s" :value="s">
-          {{ getCalendarSeason(s).title }}
-        </option>
-      </select>
+      <div class="flex gap-2">
+        <button
+          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md h-10 px-4 py-2 w-[112px] text-base font-bold"
+          @click="yearOpen = !yearOpen; quarterOpen = false"
+        >
+          {{ seasonYear }} 年
+          <span class="text-xs">▼</span>
+        </button>
+        <button
+          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md h-10 px-4 py-2 w-[112px] text-base font-bold"
+          @click="quarterOpen = !quarterOpen; yearOpen = false"
+        >
+          {{ seasonQuarterLabel }}
+          <span class="text-xs">▼</span>
+        </button>
+      </div>
+      <div v-if="yearOpen" class="absolute right-0 top-full mt-1 z-50 w-[112px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1 text-sm">
+        <button
+          v-for="y in yearOptions"
+          :key="y"
+          class="block w-full text-left px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          :class="y === seasonYear && 'font-bold'"
+          @click="goSeason(y, seasonQuarter)"
+        >
+          {{ y }} 年
+        </button>
+      </div>
+      <div v-if="quarterOpen" class="absolute right-0 top-full mt-1 z-50 w-[112px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1 text-sm">
+        <button
+          v-for="q in quarterOptions"
+          :key="q.month"
+          class="block w-full text-left px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          :class="q.month === seasonQuarter && 'font-bold'"
+          @click="goSeason(seasonYear, q.month)"
+        >
+          {{ q.label }}
+        </button>
+      </div>
     </div>
 
     <div v-if="loading" class="py-24 flex justify-center">
