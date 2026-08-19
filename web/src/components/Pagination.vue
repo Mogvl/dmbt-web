@@ -22,8 +22,9 @@ const pages = computed(() =>
 );
 
 function go(page: number) {
+  // path carries the page; query keeps only the search filters (no page)
   const q: Record<string, string | string[]> = { ...route.query };
-  q.page = String(page);
+  delete q.page;
   router.push({ path: `/resources/${page}`, query: q });
 }
 
