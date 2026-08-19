@@ -46,7 +46,7 @@ onMounted(() => {
         <SearchDialog />
       </div>
     </search>
-    <Header :feed-url="feedURL" />
+    <Header :feedURL="feedURL" />
     <div id="hero-banner" class="w-full h-(--hero-height) bg-hero">
       <template v-if="props.heading">
         <h1
@@ -79,6 +79,6 @@ onMounted(() => {
         </main>
       </div>
     </div>
-    <Footer v-if="props.footer" :timestamp="timestamp" :feed-url="feedURL" />
+    <Footer v-if="props.footer" :timestamp="timestamp" :feedURL="feedURL" />
   </div>
 </template>

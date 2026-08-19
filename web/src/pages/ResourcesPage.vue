@@ -3,6 +3,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { parseURLSearch, fetchResources, type Resource, type ResolvedFilterOptions } from '../api/client';
+import { SITE_TITLE } from '../utils/constants';
 import FilterCard from '../components/FilterCard.vue';
 import ResourcesTable from '../components/ResourcesTable.vue';
 
@@ -39,7 +40,7 @@ async function load() {
     complete.value = resp.pagination?.complete ?? false;
     filter.value = resp.filter;
     timestamp.value = resp.timestamp;
-    document.title = `${generateTitle(filter.value)} | Anime Garden 動漫花園資源網第三方镜像站`;
+    document.title = `${generateTitle(filter.value)} | ${SITE_TITLE}`;
   } else {
     error.value = resp.error;
   }

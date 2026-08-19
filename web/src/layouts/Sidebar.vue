@@ -123,11 +123,11 @@ function itemLink(item: any) {
     <!-- trigger -->
     <div
       v-if="!sidebar.isOpen"
-      class="sidebar-trigger font-quicksand font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 text-2xl"
+      class="sidebar-trigger font-quicksand font-medium"
       title="打开收藏夹"
       @click="sidebar.open()"
     >
-      🔖
+      收藏夹
     </div>
 
     <!-- content -->

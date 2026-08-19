@@ -4,7 +4,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchResources, type Resource, type ResolvedFilterOptions } from '../api/client';
 import ResourcesTable from '../components/ResourcesTable.vue';
-import { fansubs } from '../utils/constants';
+import { fansubs, SITE_TITLE } from '../utils/constants';
 import { stringifyURLSearch } from '../api/client';
 
 const route = useRoute();
@@ -44,7 +44,7 @@ async function load() {
       if (sData.data.alias?.zh?.[0]) names.add(sData.data.alias.zh[0]);
       (sData.data.search?.include ?? []).forEach((n: string) => names.add(n));
       subjectNames.value = [...names];
-      document.title = `${displayName.value} | Anime Garden 動漫花園資源網第三方镜像站`;
+      document.title = `${displayName.value} 最新资源 | ${SITE_TITLE}`;
     } else {
       subject.value = null;
     }

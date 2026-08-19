@@ -4,6 +4,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { parseURLSearch, fetchResources, type Resource } from '../api/client';
+import { IFRAME_TITLE } from '../utils/constants';
 import ResourcesTable from '../components/ResourcesTable.vue';
 
 const route = useRoute();
@@ -33,6 +34,7 @@ async function load() {
     error.value = resp.error;
   }
   loading.value = false;
+  document.title = `${title.value} | ${IFRAME_TITLE}`;
 }
 
 onMounted(load);

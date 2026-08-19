@@ -2,6 +2,7 @@
 // API docs page mirroring pages/docs.api/route.tsx: Swagger UI from the
 // public OpenAPI spec.
 import { nextTick, onMounted, ref } from 'vue';
+import { SITE_TITLE } from '../utils/constants';
 import SwaggerUIBundle from 'swagger-ui-dist/swagger-ui-bundle.js';
 import 'swagger-ui-dist/swagger-ui.css';
 
@@ -16,6 +17,7 @@ onMounted(async () => {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const spec = await resp.json();
     specRef.value = spec;
+    document.title = `API 文档 | ${SITE_TITLE}`;
     loading.value = false;
     await nextTick();
     if (container.value && specRef.value) {

@@ -8,13 +8,16 @@ import { formatChinaTime } from '../utils/date';
 import { DisplayTypeColor, getPikPakUrlChecker } from '../utils/constants';
 import Pagination from './Pagination.vue';
 
-const props = defineProps<{
-  resources: Resource[];
-  page?: number;
-  complete?: boolean;
-  timestamp?: Date;
-  displayFansub?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    resources: Resource[];
+    page?: number;
+    complete?: boolean;
+    timestamp?: Date;
+    displayFansub?: boolean;
+  }>(),
+  { displayFansub: true }
+);
 
 const router = useRouter();
 const route = useRoute();

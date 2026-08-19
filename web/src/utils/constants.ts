@@ -74,6 +74,12 @@ export const SEARCH_TOP = 128;
 export const HERO_HEIGHT = 300;
 
 export const SITE_TITLE = 'Anime Garden 動漫花園資源網镜像站 动漫花园动画 BT 资源聚合站';
+export const IFRAME_TITLE = 'Anime Garden 動漫花園資源網第三方镜像站';
+
+// truncate mirrors the original web utils/string.ts truncate.
+export function truncate(text: string, maxLength: number, ellipsis = '...') {
+  return text.length >= maxLength ? text.slice(0, maxLength - ellipsis.length) + ellipsis : text;
+}
 
 export const CalendarSeasonMonths = [1, 4, 7, 10];
 

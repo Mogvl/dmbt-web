@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { toast } from 'vue-sonner';
 import { fetchResourceDetail, parseSize, type ResourceDetail } from '../api/client';
 import { formatChinaTime } from '../utils/date';
-import { getPikPakUrlChecker } from '../utils/constants';
+import { getPikPakUrlChecker, truncate } from '../utils/constants';
 
 const route = useRoute();
 const router = useRouter();
@@ -65,7 +65,7 @@ async function load() {
     detail.value = resp.detail;
     isDeleted.value = resp.isDeleted ?? false;
     if (resp.resource) {
-      document.title = `${resp.resource.title} | Anime Garden 動漫花園資源網第三方镜像站`;
+      document.title = truncate(resp.resource.title, 70);
     }
     if (resp.detail) {
       treeRoots.value = buildTree(resp.detail.files);

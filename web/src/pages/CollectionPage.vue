@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { fetchCollection } from '../api/client';
 import ResourcesTable from '../components/ResourcesTable.vue';
 import { stringifySearchText } from '../utils/search';
+import { SITE_TITLE } from '../utils/constants';
 
 const route = useRoute();
 const router = useRouter();
@@ -20,7 +21,7 @@ async function load() {
   const resp = await fetchCollection(hash.value);
   if (resp.ok) {
     data.value = resp;
-    document.title = `${resp.name || '收藏夹 ' + hash.value} | Anime Garden 動漫花園資源網第三方镜像站`;
+    document.title = `${resp.name || '收藏夹'} | ${SITE_TITLE}`;
   } else {
     router.replace('/');
     return;

@@ -543,9 +543,10 @@ export function transformResourceHref(provider: string, href?: string) {
   }
 }
 
-export function parseSize(size: number) {
-  if (size < 1024) return `${size} B`;
-  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
-  if (size < 1024 * 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1)} MB`;
-  return `${(size / 1024 / 1024 / 1024).toFixed(1)} GB`;
+// Port of the original web parseSize: the API size field is in KB units.
+export function parseSize(num: number) {
+  if (num === 0) return '';
+  if (num < 1024) return `${num} KB`;
+  if (num < 1024 * 1024) return `${(num / 1024).toFixed(2)} MB`;
+  return `${(num / 1024 / 1024).toFixed(2)} GB`;
 }
