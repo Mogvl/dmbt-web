@@ -38,22 +38,22 @@ const visiblePages = computed(() =>
     <div class="flex-auto"></div>
     <div v-if="props.page > 1 || !props.complete" class="flex lt-md:(mt-4 justify-center) items-center gap-2 text-base-500">
       <button
-        class="px-2 py-1 rounded-md hover:bg-gray-100 select-none cursor-pointer"
+        class="page-btn select-none cursor-pointer"
         :class="{ hidden: !isPrev }"
         @click="go(props.page - 1)"
       >
         <span>上一页</span>
       </button>
       <template v-if="props.page > 2">
-        <button class="px-2 py-1 rounded-md hover:bg-gray-100 select-none cursor-pointer" @click="go(1)">
+        <button class="page-btn select-none cursor-pointer" @click="go(1)">
           <span>1</span>
         </button>
         <span class="select-none">…</span>
       </template>
       <template v-for="p in visiblePages" :key="p">
         <button
-          class="px-2 py-1 rounded-md hover:bg-gray-100 select-none cursor-pointer"
-          :class="p === props.page && 'text-pink-600'"
+          class="page-btn select-none cursor-pointer"
+          :class="p === props.page && 'page-btn-active'"
           @click="go(p)"
         >
           <span>{{ p }}</span>
@@ -61,7 +61,7 @@ const visiblePages = computed(() =>
       </template>
       <span v-if="isNext" class="select-none">…</span>
       <button
-        class="px-2 py-1 rounded-md hover:bg-gray-100 select-none cursor-pointer"
+        class="page-btn select-none cursor-pointer"
         :class="{ hidden: !isNext }"
         @click="go(props.page + 1)"
       >

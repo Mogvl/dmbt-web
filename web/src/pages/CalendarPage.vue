@@ -138,21 +138,21 @@ watch(seasonHead, (h) => {
       </h1>
       <div class="flex gap-2">
         <button
-          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md h-10 px-4 py-2 w-[112px] text-base font-bold"
+          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-accent-wash rounded-full h-10 px-4 py-2 w-[112px] text-base font-bold transition-colors"
           @click="yearOpen = !yearOpen; quarterOpen = false"
         >
           {{ seasonYear }} 年
           <span class="text-xs">▼</span>
         </button>
         <button
-          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md h-10 px-4 py-2 w-[112px] text-base font-bold"
+          class="inline-flex items-center justify-between whitespace-nowrap text-sm font-medium border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-accent-wash rounded-full h-10 px-4 py-2 w-[112px] text-base font-bold transition-colors"
           @click="quarterOpen = !quarterOpen; yearOpen = false"
         >
           {{ seasonQuarterLabel }}
           <span class="text-xs">▼</span>
         </button>
       </div>
-      <div v-if="yearOpen" class="absolute right-0 top-full mt-1 z-50 w-[112px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1 text-sm">
+      <div v-if="yearOpen" class="glass-menu absolute right-0 top-full mt-2 z-50 w-[112px] py-1.5 text-sm">
         <button
           v-for="y in yearOptions"
           :key="y"
@@ -163,7 +163,7 @@ watch(seasonHead, (h) => {
           {{ y }} 年
         </button>
       </div>
-      <div v-if="quarterOpen" class="absolute right-0 top-full mt-1 z-50 w-[112px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1 text-sm">
+      <div v-if="quarterOpen" class="glass-menu absolute right-0 top-full mt-2 z-50 w-[112px] py-1.5 text-sm">
         <button
           v-for="q in quarterOptions"
           :key="q.month"
@@ -219,7 +219,7 @@ watch(seasonHead, (h) => {
               v-for="bgm in day.bangumis"
               :key="bgm.id"
               :to="`/subject/${bgm.id}`"
-              class="group block rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-shadow"
+              class="group block rounded-2xl overflow-hidden border border-white/60 dark:border-white/10 bg-white/45 dark:bg-white/5 backdrop-blur-md hover:shadow-lift transition-shadow"
             >
               <div class="aspect-[3/4] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                 <img

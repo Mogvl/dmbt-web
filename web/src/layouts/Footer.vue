@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useSidebarStore, useThemeStore } from '../stores';
 import { formatChinaTime } from '../utils/date';
+import { Moon, Sun } from 'lucide-vue-next';
 
 const props = defineProps<{
   timestamp?: Date;
@@ -108,11 +109,12 @@ const timestamp = props.timestamp;
           </div>
           <div>
             <button
-              class="p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              class="p-2.5 rounded-full border border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md hover:bg-accent-wash transition-colors"
               @click="theme.toggle()"
               :title="theme.current === 'dark' ? '切换到浅色模式' : '切换到深色模式'"
             >
-              {{ theme.current === 'dark' ? '☀️' : '🌙' }}
+              <Sun v-if="theme.current === 'dark'" :size="16" />
+              <Moon v-else :size="16" />
             </button>
           </div>
         </div>

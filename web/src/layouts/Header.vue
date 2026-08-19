@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Dropdown from '../components/Dropdown.vue';
+import { Rss } from 'lucide-vue-next';
 import { fansubs as AllFansubs, types, DisplayTypeColor } from '../utils/constants';
 import { useFansubsStore } from '../stores';
 import { formatInTimeZone } from '../utils/date';
@@ -111,6 +112,10 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
     class="fixed z-13 pt-[1px] flex justify-center items-center w-full h-(--nav-height) pointer-events-none text-base-500"
   >
     <nav class="main flex gap-1 [&>div]:(leading-(--nav-height))">
+      <!-- soft glass backdrop behind the nav -->
+      <div class="pointer-events-none fixed inset-x-0 top-2 mx-auto flex justify-center">
+        <div class="h-12 w-[min(760px,calc(100vw-48px))] rounded-full border border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-xl shadow-soft"></div>
+      </div>
       <div
         class="box-content w-[32px] pl3 lt-sm:pl1 text-2xl text-center font-quicksand font-bold pointer-events-auto"
       >
@@ -144,7 +149,7 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
                 周{{ day.text }}
               </div>
               <div
-                class="hidden group-hover:block absolute left-full top-0 z-50 min-h-[100px] max-h-[min(500px,calc(100vh-120px))] lt-sm:max-h-[360px] rounded-md shadow-box bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800 overflow-y-auto"
+                class="glass-menu hidden group-hover:block absolute left-full top-0 z-50 min-h-[100px] max-h-[min(500px,calc(100vh-120px))] lt-sm:max-h-[360px] divide-y divide-zinc-100/60 dark:divide-zinc-800/60 overflow-y-auto"
               >
                 <router-link
                   v-for="bgm in day.bangumis"
@@ -208,10 +213,10 @@ const goResources = (page: number, search: Record<string, string> = {}) => {
           v-if="props.feedURL"
           :href="props.feedURL"
           target="_blank"
-          class="inline cursor-pointer rounded-md p-2 text-[#ee802f] hover:!text-[#ff7800]"
+          class="inline-flex items-center gap-1 cursor-pointer rounded-full px-3 py-1.5 text-sm text-[#b370c8] hover:text-[#9a5bb8] hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
         >
-          <span class="text-sm mr-1">📡</span>
-          <span class="text-sm">RSS</span>
+          <Rss :size="14" />
+          <span>RSS</span>
         </a>
       </div>
     </nav>

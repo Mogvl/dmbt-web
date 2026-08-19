@@ -211,23 +211,23 @@ onBeforeUnmount(() => {
         v-model="input"
         type="text"
         :placeholder="'搜索资源...'"
-        class="w-full h-[44.4px] px-4 pr-12 text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg shadow-sm outline-none placeholder:text-zinc-400"
+        class="w-full h-[44.4px] px-5 pr-12 text-base rounded-full bg-white/55 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-xl shadow-soft outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 text-zinc-800 dark:text-zinc-100 transition-shadow focus:shadow-lift"
         @keydown.enter.prevent="selectGoToSearch(input, 'button')"
         @focus="searchActive = true"
       />
       <button
-        class="absolute right-2 top-1/2 -translate-y-1/2 text-base-500 hover:text-base-900"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-base-500 hover:text-accent transition-colors"
         title="搜索"
         @mousedown.prevent="selectGoToSearch(input, 'button')"
       >
-        ⏎
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </button>
     </div>
 
     <!-- dropdown -->
     <div
       v-if="searchActive"
-      class="absolute top-[52px] left-0 right-0 z-50 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden"
+      class="glass-menu absolute top-[54px] left-0 right-0 z-50 overflow-hidden"
     >
       <!-- go-to-search -->
       <div

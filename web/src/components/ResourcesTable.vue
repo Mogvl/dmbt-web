@@ -7,6 +7,7 @@ import { parseSize } from '../api/client';
 import { formatChinaTime } from '../utils/date';
 import { DisplayTypeColor, getPikPakUrlChecker } from '../utils/constants';
 import Pagination from './Pagination.vue';
+import { Play, Download, Film, Layers, Music2, Clapperboard, BookOpen, Gamepad2, Tv, FileText, ExternalLink } from 'lucide-vue-next';
 
 const props = withDefaults(
   defineProps<{
@@ -26,18 +27,18 @@ const isDownloadable = (type: string) =>
   ['动画', '合集', '日剧', '特摄'].includes(type);
 
 const typeIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    动画: '🎬',
-    合集: '📦',
-    音乐: '🎵',
-    日剧: '📺',
-    RAW: '📼',
-    漫画: '📚',
-    游戏: '🎮',
-    特摄: '🎥',
-    其他: '📄'
+  const icons: Record<string, any> = {
+    动画: Film,
+    合集: Layers,
+    音乐: Music2,
+    日剧: Clapperboard,
+    RAW: Tv,
+    漫画: BookOpen,
+    游戏: Gamepad2,
+    特摄: Tv,
+    其他: FileText
   };
-  return icons[type] ?? '📄';
+  return icons[type] ?? FileText;
 };
 
 // followSearch: keep current query and override one param
@@ -87,11 +88,12 @@ const firstPageLink = computed(() => {
               <div class="flex xl:min-w-[600px] lg:min-w-[480px] lt-lg:w-[calc(95vw-4px)]">
                 <div class="flex-shrink-0 mr3 flex justify-center items-center">
                   <button
-                    class="flex items-center justify-center h-[32px] w-[32px] rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    class="flex items-center justify-center h-[32px] w-[32px] rounded-full bg-accent-wash hover:bg-accent-wash-strong transition-colors"
                     :class="DisplayTypeColor[r.type]"
+                    :title="`筛选类型: ${r.type}`"
                     @click="router.push({ path: '/resources/1', query: followSearch({ type: r.type }) })"
                   >
-                    {{ typeIcon(r.type) }}
+                    <component :is="typeIcon(r.type)" :size="14" />
                   </button>
                 </div>
                 <div>
@@ -136,10 +138,10 @@ const firstPageLink = computed(() => {
                     </a>
                     <router-link
                       :to="`/detail/${r.provider}/${r.providerId}`"
-                      class="text-link-secondary text-xs"
+                      class="text-link-secondary text-xs inline-flex items-center gap-0.5"
                       :aria-label="`Go to resource detail of ${r.title}`"
                     >
-                      ↗ <span class="more">详情</span>
+                      <ExternalLink :size="12" /> <span class="more">详情</span>
                     </router-link>
                   </div>
                 </div>
@@ -153,11 +155,7 @@ const firstPageLink = computed(() => {
                     class="block w-max"
                     :aria-label="`Go to resources list of fansub ${r.fansub.name}`"
                   >
-                    <span
-                      class="text-xs inline-block px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-                    >
-                      {{ r.fansub.name }}
-                    </span>
+                    <span class="tag-pill text-xs">{{ r.fansub.name }}</span>
                   </router-link>
                 </template>
                 <template v-else-if="r.publisher">
@@ -166,11 +164,7 @@ const firstPageLink = computed(() => {
                     class="block w-max"
                     :aria-label="`Go to resources list of publisher ${r.publisher.name}`"
                   >
-                    <span
-                      class="text-xs inline-block px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-                    >
-                      {{ r.publisher.name }}
-                    </span>
+                    <span class="tag-pill text-xs">{{ r.publisher.name }}</span>
                   </router-link>
                 </template>
               </div>
@@ -180,19 +174,19 @@ const firstPageLink = computed(() => {
                 <a
                   :href="getPikPakUrlChecker(r.magnet)"
                   target="_blank"
-                  class="play text-xl text-base-500 hover:text-base-900"
+                  class="play flex items-center justify-center w-8 h-8 rounded-full text-base-500 hover:text-accent hover:bg-accent-wash transition-colors"
                   aria-label="Play resource"
                   :title="r.title"
                 >
-                  ▶
+                  <Play :size="16" />
                 </a>
                 <a
                   :href="magnetWithTracker(r)"
-                  class="download text-xl text-base-500 hover:text-base-900"
+                  class="download flex items-center justify-center w-8 h-8 rounded-full text-base-500 hover:text-accent hover:bg-accent-wash transition-colors"
                   aria-label="Download resource"
                   :title="r.title"
                 >
-                  ⬇
+                  <Download :size="16" />
                 </a>
               </div>
             </td>

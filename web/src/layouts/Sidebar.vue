@@ -8,6 +8,7 @@ import { useSidebarStore, useCollectionsStore } from '../stores';
 import { stringifySearchText } from '../utils/search';
 import { formatChinaTime } from '../utils/date';
 import { DisplayTypeColor } from '../utils/constants';
+import { Bookmark, Calendar, List, HelpCircle, MoreHorizontal } from 'lucide-vue-next';
 
 const sidebar = useSidebarStore();
 const collectionsStore = useCollectionsStore();
@@ -177,7 +178,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
       title="打开收藏夹"
       @click="sidebar.open()"
     >
-      <span class="mr-1">🔖</span>
+      <Bookmark :size="14" class="mr-1.5" />
       <span class="text-sm">收藏夹</span>
     </div>
 
@@ -188,7 +189,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
         class="mt-[8px] px-2 py-1 text-base-700 select-none font-medium font-quicksand flex items-center"
       >
         <div class="block">
-          <span class="mr-1">🔖</span>
+          <Bookmark :size="14" class="mr-1.5" />
           <span class="text-sm font-bold">收藏夹</span>
         </div>
         <div class="flex-auto"></div>
@@ -208,7 +209,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
           class="ml-1 mr-2 px-1 py-2 cursor-pointer select-none text-sm text-base-700 flex items-center hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md"
           :class="activeTab === 'anime' && 'bg-zinc-100 dark:bg-zinc-800'"
         >
-          <span class="mr-1">📅</span>
+          <Calendar :size="15" class="mr-2" />
           <span>动画周历</span>
         </router-link>
         <router-link
@@ -216,7 +217,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
           class="ml-1 mr-2 px-1 py-2 cursor-pointer select-none text-sm text-base-700 flex items-center hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md"
           :class="activeTab === 'resources' && 'bg-zinc-100 dark:bg-zinc-800'"
         >
-          <span class="mr-1">📋</span>
+          <List :size="15" class="mr-2" />
           <span>所有资源</span>
         </router-link>
         <a
@@ -224,7 +225,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
           target="_blank"
           class="ml-1 mr-2 px-1 py-2 cursor-pointer select-none text-sm text-base-700 flex items-center hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md"
         >
-          <span class="mr-1">❓</span>
+          <HelpCircle :size="15" class="mr-2" />
           <span>高级搜索帮助</span>
         </a>
       </template>
@@ -259,14 +260,14 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
             class="hidden group-hover:flex absolute h-full top-0 right-[4px] py-[1px] items-center"
           >
             <button
-              class="w-[16px] h-full flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md font-bold"
+              class="w-[22px] h-full flex items-center justify-center rounded-full hover:bg-accent-wash transition-colors"
               @click="activeMenu = activeMenu === item.searchParams ? null : item.searchParams"
             >
-              ⋯
+              <MoreHorizontal :size="14" />
             </button>
             <div
               v-if="activeMenu === item.searchParams"
-              class="absolute right-0 top-full z-50 w-[180px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1 text-sm"
+              class="glass-menu absolute right-0 top-full z-50 w-[180px] py-1.5 text-sm"
               @click.stop
             >
               <button
@@ -301,7 +302,7 @@ function filterLines(item: any): Array<{ label: string; values: string[]; colore
           <!-- filter tooltip -->
           <div
             v-if="activeTooltip === item.searchParams && renaming !== item.searchParams"
-            class="hidden group-hover:block absolute left-full top-0 z-50 ml-2 w-[220px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg p-3 space-y-1 text-xs pointer-events-none"
+            class="glass-menu hidden group-hover:block absolute left-full top-0 z-50 ml-2 w-[230px] p-3.5 space-y-1.5 text-xs pointer-events-none"
           >
             <div v-for="line in filterLines(item)" :key="line.label" class="flex gap-2">
               <span class="font-bold select-none shrink-0">{{ line.label }}</span>

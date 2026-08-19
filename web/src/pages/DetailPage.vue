@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router';
 import { fetchResourceDetail, type ResourceDetail } from '../api/client';
 import { formatInTimeZone } from '../utils/date';
 import { getPikPakUrlChecker, truncate } from '../utils/constants';
+import { Folder, PlayCircle, File, FileArchive, Subtitles } from 'lucide-vue-next';
 
 const route = useRoute();
 
@@ -137,8 +138,8 @@ function fileIcon(name: string) {
         </h1>
 
         <!-- download card -->
-        <div class="download-link rounded-md shadow-box">
-          <h2 class="text-lg font-bold border-b px-4 py-2 flex items-center">
+        <div class="download-link glass-card overflow-hidden">
+          <h2 class="text-lg font-bold border-b px-5 py-3 flex items-center" style="border-color: var(--line)">
             <a
               :href="pikpakUrl"
               target="_blank"
@@ -147,7 +148,7 @@ function fileIcon(name: string) {
               下载链接
             </a>
           </h2>
-          <div class="p-4 space-y-1 overflow-auto whitespace-nowrap">
+          <div class="p-5 space-y-2 overflow-auto whitespace-nowrap">
             <div class="flex">
               <span class="text-base-600 select-none inline-block w-[160px] min-w-[160px] lt-sm:w-[120px] lt-sm:min-w-[120px]">
                 <a
@@ -229,13 +230,13 @@ function fileIcon(name: string) {
         </div>
 
         <!-- files card -->
-        <div class="file-list rounded-md shadow-box">
-          <h2 class="text-lg font-bold border-b px-4 py-2">文件列表</h2>
-          <div class="mb-4 max-h-[80vh] overflow-auto px-4 py-4 space-y-2">
+        <div class="file-list glass-card overflow-hidden">
+          <h2 class="text-lg font-bold border-b px-5 py-3" style="border-color: var(--line)">文件列表</h2>
+          <div class="max-h-[80vh] overflow-auto px-5 py-4 space-y-2">
             <div v-for="item in tree" :key="item.name">
               <div class="flex items-center gap-4">
                 <div class="flex items-center gap-1">
-                  <span>{{ item.children.length > 0 ? '📁' : fileIcon(item.name) }}</span>
+                  <component :is="item.children.length > 0 ? Folder : fileIcon(item.name)" :size="15" class="text-faint shrink-0" />
                   <div class="text-sm text-base-600">{{ item.name }}</div>
                 </div>
                 <div class="flex-auto"></div>
@@ -247,7 +248,7 @@ function fileIcon(name: string) {
                 <div v-for="child in item.children" :key="child.name">
                   <div class="flex items-center gap-4">
                     <div class="flex items-center gap-1">
-                      <span>{{ child.children.length > 0 ? '📁' : fileIcon(child.name) }}</span>
+                      <component :is="child.children.length > 0 ? Folder : fileIcon(child.name)" :size="15" class="text-faint shrink-0" />
                       <div class="text-sm text-base-600">{{ child.name }}</div>
                     </div>
                     <div class="flex-auto"></div>
@@ -259,7 +260,7 @@ function fileIcon(name: string) {
                     <div v-for="leaf in child.children" :key="leaf.name">
                       <div class="flex items-center gap-4">
                         <div class="flex items-center gap-1">
-                          <span>{{ fileIcon(leaf.name) }}</span>
+                          <component :is="fileIcon(leaf.name)" :size="15" class="text-faint shrink-0" />
                           <div class="text-sm text-base-600">{{ leaf.name }}</div>
                         </div>
                         <div class="flex-auto"></div>

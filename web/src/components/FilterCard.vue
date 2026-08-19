@@ -179,7 +179,7 @@ watch(dropdownOpen, (open) => {
 </script>
 
 <template>
-  <div v-if="props.filter && hasFilters" class="mb4 p-4 lt-sm:px-3 w-full bg-zinc-50 dark:bg-zinc-800 drop-shadow rounded-md space-y-2">
+  <div v-if="props.filter && hasFilters" class="glass mb-5 p-5 lt-sm:px-4 w-full space-y-2.5">
     <!-- preset -->
     <div v-if="resolved.preset" class="space-x-2 text-0">
       <span class="text-4 text-base-800 font-bold mr2 select-none keyword">预设</span>
@@ -285,30 +285,28 @@ watch(dropdownOpen, (open) => {
       class="flex items-center gap-4 lt-sm:gap-2 pt-4"
     >
       <button
-        class="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-md border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 add-collection"
+        class="btn btn-ghost add-collection text-xs"
         @click="addToCollection"
       >
-        <span>🔖</span>
         <span>添加到收藏夹</span>
       </button>
 
       <div ref="dropRef" class="inline-flex w-fit divide-x rounded-md relative">
         <button
-          class="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-none rounded-s-md border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          class="btn btn-ghost text-xs !rounded-r-none"
           @click="copyRSS"
         >
-          <span>📋</span>
           <span>复制 RSS 订阅链接</span>
         </button>
         <button
-          class="px-2 py-1.5 text-sm border border-zinc-300 dark:border-zinc-600 border-l-0 rounded-none rounded-e-md hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          class="btn btn-ghost text-xs !rounded-l-none !px-2.5"
           @click="dropdownOpen = !dropdownOpen"
         >
-          <span class="text-xl">⌄</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div
           v-if="dropdownOpen"
-          class="absolute right-0 top-full mt-1 z-50 w-[200px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
+          class="glass-menu absolute right-0 top-full mt-2 z-50 w-[200px] py-1.5"
         >
           <button class="w-full text-left px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800" @click="copyAllMagnetLinks">
             <span>🧲</span><span class="ml-1">复制所有磁力链接</span>

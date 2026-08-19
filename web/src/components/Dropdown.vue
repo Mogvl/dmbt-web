@@ -47,7 +47,7 @@ onBeforeUnmount(() => {
     >
       <div
         v-if="open"
-        class="absolute top-full z-50 mt-[-10px] min-w-max rounded-md shadow-box bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800 leading-normal"
+        class="glass-menu absolute top-full z-50 mt-[10px] min-w-max divide-y divide-zinc-100/60 dark:divide-zinc-800/60 leading-normal"
         :class="[
           menuClass,
           props.align === 'right' ? 'right-0' : 'left-0'

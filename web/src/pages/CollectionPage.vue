@@ -68,9 +68,9 @@ const filterText = (filter: any) => {
         <a
           :href="feedURL"
           target="_blank"
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[#ee802f]"
+          class="btn btn-ghost text-xs text-[#b370c8]"
         >
-          📡 RSS
+          RSS
         </a>
       </div>
 

@@ -100,7 +100,7 @@ function goFallbackSearch() {
 
     <template v-else>
       <!-- subject card -->
-      <div class="mb-6 flex gap-6 p-4 bg-zinc-50 dark:bg-zinc-800 rounded-md">
+      <div class="glass mb-8 flex gap-6 p-6">
         <img
           :src="poster"
           :alt="displayName"
