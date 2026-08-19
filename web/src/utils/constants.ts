@@ -116,7 +116,10 @@ export function getActiveSeason(now = new Date()) {
 export const KEEPSHARE_ID = 'gv78k1oi';
 
 export function getPikPakUrlChecker(magnet: string) {
-  return `https://keepshare.org/share/${KEEPSHARE_ID}?url=${encodeURIComponent(magnet)}`;
+  // port of the original getPikPakUrlChecker: strip extra params, then the
+  // keepshare path format /{id}/{encodeURIComponent(magnet)}
+  const url = magnet.split('&')[0];
+  return `https://keepshare.org/${KEEPSHARE_ID}/${encodeURIComponent(url)}`;
 }
 
 // Format a size number (bytes) like the original parseSize
