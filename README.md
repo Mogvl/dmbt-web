@@ -34,6 +34,15 @@ npx skills add https://github.com/Mogvl/dmbt-web --skill yuc
 
 OpenClaw 等客户端也可以直接把本仓库的 `skills/animegarden`、`skills/yuc` 目录挂载/克隆到本地 skills 目录使用.
 
+**Design taste skill**：前端设计风格系列技能（内置自 [taste-skill](https://github.com/Leonxlnx/taste-skill)，MIT）：
+
+```bash
+npx skills add https://github.com/Mogvl/dmbt-web --skill design-taste-frontend   # 默认 v2
+npx skills add https://github.com/Leonxlnx/taste-skill                            # 官方源全部技能
+```
+
+本仓库 `skills/taste-skill/` 下内置了全部 14 个技能（brandkit / brutalist / gpt-taste / image-to-code / imagegen-frontend-web / imagegen-frontend-mobile / minimalist / output / redesign / soft / stitch / taste-skill v1+v2），安装名见各 `SKILL.md` 的 `name:` 字段。
+
 `animegarden` skill 的 API 地址通过环境变量 `ANIMEGARDEN_API_BASE` 配置（默认 `http://localhost:9701`；Docker Compose 部署后改为你的服务器地址，例如 `https://anime.example.com:9701`），首次使用请确认你的实例已爬取到数据（打开 http://localhost:9700 应能看到资源列表）。
 
 ## 使用 MCP

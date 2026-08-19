@@ -35,6 +35,13 @@ npx skills add https://github.com/Mogvl/dmbt-web --skill yuc
 OpenClaw and similar clients can also mount the `skills/animegarden` and
 `skills/yuc` directories directly.
 
+**Design taste skills**: frontend design-style skills bundled from
+[taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT) under
+`skills/taste-skill/` (brandkit, gpt-taste, image-to-code,
+imagegen-frontend-*, minimalist, output, redesign, soft, stitch,
+taste-skill v1 + v2). Install names are the `name:` fields in each
+`SKILL.md`.
+
 The `animegarden` skill's API base is configured via `ANIMEGARDEN_API_BASE`
 (default `http://localhost:9701`; point it at your deployment after Docker
 Compose, e.g. `https://anime.example.com:9701`).
