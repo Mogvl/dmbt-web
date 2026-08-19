@@ -112,7 +112,11 @@ docker compose up -d
 | `dmbt-web` | `ghcr.io/mogvl/dmbt-web/web:latest` | `9700:80` | nginx 托管前端，同源代理 API/RSS 到后端 |
 | `dmbt-server` | `ghcr.io/mogvl/dmbt-web/server:latest` | 内部 9701 | Go API + 爬虫调度，`DATA_DIR=/data` 持久化 |
 
-后端环境变量（`docker-compose.yml` 中可覆盖）：`PORT`（默认 9701）、`DATA_DIR`（默认 `/data`）、`CRON`（默认 true）、`APP_HOST`（feed/detail 链接用域名）、`TELEGRAM_TOKEN` / `TELEGRAM_CHAT_ID`（可选推送）、`SCRAPE_PAGE_DELAY_MS` / `MAX_FETCH_PAGES`（爬虫节流）。
+后端环境变量（`docker-compose.yml` 中可覆盖）：`PORT`（默认 9701）、`DATA_DIR`（默认 `/data`，SQLite 数据库位置，必须指向挂载卷）、`CRON`（默认 true）、`APP_HOST`（feed/detail 链接用域名）、`TELEGRAM_TOKEN` / `TELEGRAM_CHAT_ID`（可选推送）、`SCRAPE_PAGE_DELAY_MS` / `MAX_FETCH_PAGES`（爬虫节流）。
+
+> 容器以非 root 用户运行；启动入口会自动 `chown` 数据目录，宿主机新建的
+> `./data`（root 属主）也能直接写入，无需手动改权限。
+> 镜像为 amd64 + arm64 双架构。
 
 本地构建镜像：
 
