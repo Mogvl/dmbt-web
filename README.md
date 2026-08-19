@@ -49,6 +49,35 @@ web/      Vue 3 + Vite + Tailwind v4 frontend (port 9700)
                         detail (file tree) / docs api / iframe / about
 ```
 
+## 一键部署 (Docker Compose)
+
+镜像自动构建并发布到 GHCR（每次 push main 由 GitHub Actions 触发），支持 docker compose 一键启动：
+
+```bash
+# 1. 拉取并启动（前端 :9700，后端容器内部 :9701）
+curl -O https://raw.githubusercontent.com/Mogvl/dmbt-web/main/docker-compose.yml
+docker compose up -d
+
+# 2. 打开 http://localhost:9700
+# 数据持久化在 ./data（SQLite）
+```
+
+服务说明（与 jmcomic 的 compose 风格一致）：
+
+| 服务 | 镜像 | 端口 | 说明 |
+|---|---|---|---|
+| `dmbt-web` | `ghcr.io/mogvl/dmbt-web/web:latest` | `9700:80` | nginx 托管前端，同源代理 API/RSS 到后端 |
+| `dmbt-server` | `ghcr.io/mogvl/dmbt-web/server:latest` | 内部 9701 | Go API + 爬虫调度，`DATA_DIR=/data` 持久化 |
+
+后端环境变量（`docker-compose.yml` 中可覆盖）：`PORT`（默认 9701）、`DATA_DIR`（默认 `/data`）、`CRON`（默认 true）、`APP_HOST`（feed/detail 链接用域名）、`TELEGRAM_TOKEN` / `TELEGRAM_CHAT_ID`（可选推送）、`SCRAPE_PAGE_DELAY_MS` / `MAX_FETCH_PAGES`（爬虫节流）。
+
+本地构建镜像：
+
+```bash
+docker build -t ghcr.io/mogvl/dmbt-web/server:latest ./server
+docker build -t ghcr.io/mogvl/dmbt-web/web:latest ./web
+```
+
 ## Development
 
 ### Backend (Go, port 9701)
